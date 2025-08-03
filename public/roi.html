@@ -1,0 +1,1204 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Marks Guns - Executive Strategy Dashboard</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: #f8fafc;
+            color: #1e293b;
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            background: #ffffff;
+            padding: 24px 32px;
+            border-radius: 12px;
+            margin-bottom: 24px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            border-top: 4px solid #dc2626;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .header-left h1 {
+            font-size: 1.875em;
+            font-weight: 600;
+            color: #1e293b;
+            margin-bottom: 4px;
+            letter-spacing: -0.5px;
+        }
+
+        .header-left .subtitle {
+            color: #64748b;
+            font-size: 0.875em;
+            font-weight: 400;
+        }
+
+        .header-right {
+            text-align: right;
+        }
+
+        .header-right .date {
+            color: #94a3b8;
+            font-size: 0.875em;
+        }
+
+        .header-right .export-btn {
+            background: #dc2626;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 6px;
+            font-size: 0.875em;
+            font-weight: 500;
+            cursor: pointer;
+            margin-top: 8px;
+            transition: all 0.2s ease;
+        }
+
+        .header-right .export-btn:hover {
+            background: #b91c1c;
+        }
+
+        .executive-summary {
+            background: #ffffff;
+            padding: 0;
+            border-radius: 12px;
+            margin-bottom: 24px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            border: 1px solid #e5e7eb;
+            display: grid;
+            grid-template-columns: 1fr 400px;
+            overflow: hidden;
+        }
+
+        .summary-content {
+            padding: 32px;
+        }
+
+        .summary-metrics {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 24px;
+            margin-bottom: 24px;
+        }
+
+        .summary-metric {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .summary-icon {
+            width: 48px;
+            height: 48px;
+            background: #fee2e2;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            flex-shrink: 0;
+        }
+
+        .summary-metric-content {
+            flex: 1;
+        }
+
+        .summary-label {
+            color: #64748b;
+            font-size: 0.75em;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 2px;
+        }
+
+        .summary-value {
+            font-size: 1.875em;
+            font-weight: 600;
+            color: #1e293b;
+            line-height: 1;
+        }
+
+        .summary-change {
+            font-size: 0.75em;
+            margin-top: 2px;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .critical-alerts {
+            background: #fef2f2;
+            border: 1px solid #fecaca;
+            border-radius: 8px;
+            padding: 16px;
+        }
+
+        .critical-alerts h3 {
+            color: #dc2626;
+            font-size: 0.875em;
+            font-weight: 600;
+            margin-bottom: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .alert-item {
+            background: white;
+            padding: 12px;
+            border-radius: 6px;
+            margin-bottom: 8px;
+            font-size: 0.875em;
+            color: #7f1d1d;
+            border-left: 3px solid #dc2626;
+        }
+
+        .radar-section {
+            background: #f8fafc;
+            padding: 32px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            border-left: 1px solid #e5e7eb;
+        }
+
+        .radar-title {
+            font-size: 0.875em;
+            font-weight: 600;
+            color: #374151;
+            text-align: center;
+            margin-bottom: 16px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+
+        .metric-card {
+            background: #ffffff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+            border: 1px solid #e5e7eb;
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .metric-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+
+        .metric-icon {
+            width: 40px;
+            height: 40px;
+            background: #fee2e2;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            flex-shrink: 0;
+        }
+
+        .metric-content {
+            flex: 1;
+        }
+
+        .metric-label {
+            color: #64748b;
+            font-size: 0.75em;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 4px;
+        }
+
+        .metric-value {
+            font-size: 1.5em;
+            font-weight: 600;
+            color: #1e293b;
+        }
+
+        .metric-change {
+            font-size: 0.75em;
+            font-weight: 500;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            margin-left: 8px;
+        }
+
+        .positive {
+            color: #16a34a;
+        }
+
+        .negative {
+            color: #dc2626;
+        }
+
+        .neutral {
+            color: #64748b;
+        }
+
+        .section {
+            background: #ffffff;
+            padding: 32px;
+            border-radius: 8px;
+            margin-bottom: 24px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            border: 1px solid #e5e7eb;
+        }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+            padding-bottom: 16px;
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        .section h2 {
+            font-size: 1.5em;
+            font-weight: 600;
+            color: #1e293b;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .section-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .btn-secondary {
+            background: #f3f4f6;
+            color: #374151;
+            border: 1px solid #e5e7eb;
+            padding: 8px 16px;
+            border-radius: 6px;
+            font-size: 0.875em;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .btn-secondary:hover {
+            background: #e5e7eb;
+        }
+
+        .radar-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 40px 0;
+            background: #f8fafc;
+            border-radius: 8px;
+            margin: 20px 0;
+        }
+
+        .radar-chart {
+            position: relative;
+            width: 400px;
+            height: 400px;
+        }
+
+        .sentiment-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 16px;
+            margin: 20px 0;
+        }
+
+        .sentiment-card {
+            background: #f8fafc;
+            padding: 20px;
+            border-radius: 8px;
+            border: 1px solid #e5e7eb;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .sentiment-card:hover {
+            transform: translateY(-2px);
+            border-color: #dc2626;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.05);
+        }
+
+        .sentiment-card .label {
+            font-size: 0.875em;
+            color: #64748b;
+            text-transform: capitalize;
+            margin-bottom: 8px;
+        }
+
+        .sentiment-card .value {
+            font-size: 2em;
+            font-weight: 600;
+            color: #1e293b;
+        }
+
+        .sentiment-card .percentage {
+            font-size: 0.875em;
+            color: #94a3b8;
+            margin-top: 4px;
+        }
+
+        .issue-item {
+            background: #f8fafc;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 16px;
+            border: 1px solid #e5e7eb;
+            transition: all 0.3s ease;
+        }
+
+        .issue-item:hover {
+            border-color: #dc2626;
+            background: #ffffff;
+        }
+
+        .issue-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 12px;
+        }
+
+        .issue-title {
+            font-weight: 600;
+            font-size: 1.1em;
+            color: #1e293b;
+        }
+
+        .issue-priority {
+            padding: 4px 12px;
+            border-radius: 4px;
+            font-size: 0.75em;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .priority-high {
+            background: #fee2e2;
+            color: #dc2626;
+        }
+
+        .priority-medium {
+            background: #fed7aa;
+            color: #ea580c;
+        }
+
+        .priority-low {
+            background: #fef3c7;
+            color: #d97706;
+        }
+
+        .issue-details {
+            color: #64748b;
+            margin-bottom: 12px;
+            line-height: 1.6;
+        }
+
+        .issue-actions {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .action-tag {
+            background: #e0e7ff;
+            color: #3730a3;
+            padding: 6px 12px;
+            border-radius: 4px;
+            font-size: 0.875em;
+            font-weight: 500;
+        }
+
+        .strategy-form {
+            background: #f8fafc;
+            padding: 24px;
+            border-radius: 8px;
+            border: 1px solid #e5e7eb;
+            margin-top: 20px;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .form-group label {
+            color: #374151;
+            font-weight: 500;
+            font-size: 0.875em;
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            background: #ffffff;
+            border: 1px solid #d1d5db;
+            padding: 10px 14px;
+            border-radius: 6px;
+            color: #1e293b;
+            font-size: 0.875em;
+            transition: all 0.2s ease;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: #dc2626;
+            box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.1);
+        }
+
+        .form-group textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+
+        .btn {
+            background: #dc2626;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 6px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-size: 0.875em;
+            margin-top: 20px;
+        }
+
+        .btn:hover {
+            background: #b91c1c;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(220, 38, 38, 0.2);
+        }
+
+        .action-plan-item {
+            background: #ffffff;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 16px;
+            border: 1px solid #e5e7eb;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+        }
+
+        .action-plan-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+
+        .action-plan-title {
+            font-weight: 600;
+            color: #1e293b;
+        }
+
+        .action-plan-timeline {
+            background: #e0e7ff;
+            color: #3730a3;
+            padding: 4px 12px;
+            border-radius: 4px;
+            font-size: 0.75em;
+            font-weight: 600;
+        }
+
+        .action-plan-description {
+            color: #64748b;
+            margin-bottom: 12px;
+            line-height: 1.6;
+        }
+
+        .action-plan-owner {
+            color: #16a34a;
+            font-size: 0.875em;
+            font-weight: 500;
+        }
+
+        .member-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 16px;
+            margin-top: 20px;
+        }
+
+        .member-card {
+            background: #f8fafc;
+            padding: 20px;
+            border-radius: 8px;
+            border: 1px solid #e5e7eb;
+            transition: all 0.3s ease;
+        }
+
+        .member-card:hover {
+            border-color: #dc2626;
+            background: #ffffff;
+        }
+
+        .member-name {
+            font-weight: 600;
+            color: #1e293b;
+            margin-bottom: 8px;
+            font-size: 1.1em;
+        }
+
+        .member-details {
+            color: #64748b;
+            font-size: 0.875em;
+            line-height: 1.5;
+        }
+
+        .member-focus {
+            color: #dc2626;
+            font-weight: 500;
+            margin-top: 8px;
+            font-size: 0.875em;
+        }
+
+        .chart-legend {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin-top: 20px;
+            flex-wrap: wrap;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.875em;
+            color: #64748b;
+        }
+
+        .legend-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+        }
+
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 2em;
+            }
+            
+            .dashboard-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .radar-chart {
+                width: 300px;
+                height: 300px;
+            }
+            
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Executive Strategy Dashboard</h1>
+            <div class="subtitle">Marks Guns Non-Profit Organization</div>
+            <div class="date">Report Generated: <span id="currentDate"></span></div>
+        </div>
+
+        <div class="dashboard-grid">
+            <div class="metric-card">
+                <div class="metric-icon">👥</div>
+                <div class="metric-label">Active Members</div>
+                <div class="metric-value" id="totalMembers">0</div>
+                <span class="metric-change neutral">↔ Based on engagement data</span>
+            </div>
+            <div class="metric-card">
+                <div class="metric-icon">⚠️</div>
+                <div class="metric-label">Critical Issues</div>
+                <div class="metric-value" id="criticalIssues">0</div>
+                <span class="metric-change negative">↑ Requires immediate action</span>
+            </div>
+            <div class="metric-card">
+                <div class="metric-icon">😊</div>
+                <div class="metric-label">Satisfaction Score</div>
+                <div class="metric-value" id="satisfaction">0%</div>
+                <span class="metric-change" id="satisfactionTrend">Calculating...</span>
+            </div>
+            <div class="metric-card">
+                <div class="metric-icon">📈</div>
+                <div class="metric-label">Engagement Index</div>
+                <div class="metric-value" id="engagement">0</div>
+                <span class="metric-change positive">↑ Email interactions</span>
+            </div>
+        </div>
+
+        <div class="section">
+            <div class="section-header">
+                <h2>Sentiment Analysis Breakdown</h2>
+            </div>
+            <div class="sentiment-grid" id="sentimentGrid">
+                <!-- Sentiment cards will be inserted here -->
+            </div>
+        </div>
+
+        <div class="section">
+            <div class="section-header">
+                <h2>Priority Issues & Recommendations</h2>
+            </div>
+            <div id="issueList">
+                <!-- Issues will be inserted here -->
+            </div>
+        </div>
+
+        <div class="section">
+            <div class="section-header">
+                <h2>Member Segments Analysis</h2>
+            </div>
+            <div class="member-grid" id="memberGrid">
+                <!-- Member segments will be inserted here -->
+            </div>
+        </div>
+
+        <div class="section">
+            <div class="section-header">
+                <h2>Strategic Action Planning</h2>
+            </div>
+            <div class="strategy-form">
+                <form id="strategyForm">
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label for="actionTitle">Action Item</label>
+                            <input type="text" id="actionTitle" placeholder="e.g., Enhance Safety Training Program" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="actionCategory">Category</label>
+                            <select id="actionCategory" required>
+                                <option value="">Select category...</option>
+                                <option value="safety">Safety & Operations</option>
+                                <option value="programs">Programs & Training</option>
+                                <option value="governance">Governance & Politics</option>
+                                <option value="facilities">Facilities & Infrastructure</option>
+                                <option value="membership">Membership & Community</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="actionOwner">Responsible Party</label>
+                            <input type="text" id="actionOwner" placeholder="e.g., Safety Committee Chair" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="actionTimeline">Timeline</label>
+                            <select id="actionTimeline" required>
+                                <option value="">Select timeline...</option>
+                                <option value="immediate">Immediate (1 Week)</option>
+                                <option value="short">Short-term (1 Month)</option>
+                                <option value="medium">Medium-term (3 Months)</option>
+                                <option value="long">Long-term (6+ Months)</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group" style="margin-top: 20px;">
+                        <label for="actionDescription">Description & Implementation Steps</label>
+                        <textarea id="actionDescription" placeholder="Describe the action plan and key implementation steps..." required></textarea>
+                    </div>
+                    <button type="submit" class="btn">Add to Strategic Plan</button>
+                </form>
+            </div>
+            <div id="actionPlanList" style="margin-top: 30px;">
+                <!-- Action plans will be inserted here -->
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Email data
+        const emailData = {
+            emails: [
+                {id: 1, sentiment: "angry", from: {name: "Robert Martinez", email: "rmartinez@email.com"}, subject: "Range Safety Violations!", body: "cease-fire violations... safety protocols..."},
+                {id: 11, sentiment: "complaining", from: {name: "Robert Martinez", email: "rmartinez@email.com"}, subject: "Re: New Member Orientation", body: "orientation was a joke... need better training..."},
+                {id: 21, sentiment: "complimentary", from: {name: "Robert Martinez", email: "rmartinez@email.com"}, subject: "Excellent RSO Training", body: "outstanding training session..."},
+                {id: 31, sentiment: "angry", from: {name: "Robert Martinez", email: "rmartinez@email.com"}, subject: "Brass Cleanup is NOT Optional!", body: "brass scattered everywhere..."},
+                {id: 41, sentiment: "complaining/sad", from: {name: "Robert Martinez", email: "rmartinez@email.com"}, subject: "Membership Standards Are Slipping", body: "club isn't what it used to be..."},
+                {id: 2, sentiment: "political", from: {name: "Sandra Chen", email: "schen2024@email.com"}, subject: "Re: Proposed Political Endorsements", body: "concern about political endorsements..."},
+                {id: 12, sentiment: "political", from: {name: "Sandra Chen", email: "schen2024@email.com"}, subject: "Board Meeting Minutes - Transparency", body: "need transparency in governance..."},
+                {id: 22, sentiment: "complimentary", from: {name: "Sandra Chen", email: "schen2024@email.com"}, subject: "Thank You for Member Survey", body: "commend the board for survey..."},
+                {id: 32, sentiment: "complaining/political", from: {name: "Sandra Chen", email: "schen2024@email.com"}, subject: "Concerned About Vendor Selection", body: "conflict of interest concerns..."},
+                {id: 42, sentiment: "political", from: {name: "Sandra Chen", email: "schen2024@email.com"}, subject: "Proposal: Ethics Committee", body: "propose forming ethics committee..."},
+                {id: 3, sentiment: "happy", from: {name: "Maria Gonzalez", email: "mariag.happiness@email.com"}, subject: "Junior Shooters Win State!", body: "won state championship!..."},
+                {id: 13, sentiment: "happy/complimentary", from: {name: "Maria Gonzalez", email: "mariag.happiness@email.com"}, subject: "Youth Program Growing!", body: "grown from 12 to 47 participants..."},
+                {id: 23, sentiment: "happy", from: {name: "Maria Gonzalez", email: "mariag.happiness@email.com"}, subject: "Olympic Shooter Visit!", body: "Olympic gold medalist visiting..."},
+                {id: 33, sentiment: "complimentary/happy", from: {name: "Maria Gonzalez", email: "mariag.happiness@email.com"}, subject: "Parent Testimonial", body: "changed my son's life..."},
+                {id: 43, sentiment: "happy", from: {name: "Maria Gonzalez", email: "mariag.happiness@email.com"}, subject: "Scholarship Winner!", body: "won $10,000 scholarship..."},
+                {id: 4, sentiment: "sad", from: {name: "David Kim", email: "dkim_volunteer@email.com"}, subject: "Stepping down as RSO", body: "back surgery, can't continue..."},
+                {id: 5, sentiment: "complaining", from: {name: "Barbara Thompson", email: "bthompson55@email.com"}, subject: "Multiple Issues", body: "ventilation broken, prices high..."},
+                {id: 6, sentiment: "complimentary", from: {name: "James Wilson", email: "jwilson_gives@email.com"}, subject: "Outstanding Training!", body: "excellent concealed carry course..."},
+                {id: 7, sentiment: "angry/political", from: {name: "Kevin O'Brien", email: "kobrien_patriot@email.com"}, subject: "Stop Caving to Anti-Gun!", body: "canceling AR-15 classes..."},
+                {id: 8, sentiment: "happy/complimentary", from: {name: "Destiny Jackson", email: "destinyj2020@email.com"}, subject: "Best decision ever!", body: "everyone so welcoming..."},
+                {id: 9, sentiment: "sad/complaining", from: {name: "Patricia Anderson", email: "panderson_cares@email.com"}, subject: "Concerned about mission", body: "losing family orientation..."},
+                {id: 10, sentiment: "complimentary/happy", from: {name: "Michael Rivera", email: "mrivera_teacher@email.com"}, subject: "Thank You Veterans Program!", body: "program means so much..."}
+            ]
+        };
+
+        let actionPlans = [];
+        let radarChart = null;
+
+        function initializeDashboard() {
+            // Set current date
+            document.getElementById('currentDate').textContent = new Date().toLocaleDateString('en-US', { 
+                year: 'numeric', 
+                month: 'short', 
+                day: 'numeric' 
+            });
+            
+            analyzeEmails();
+            setupEventListeners();
+            
+            // Ensure canvas is ready before drawing
+            setTimeout(() => {
+                drawRadarChart();
+            }, 100);
+        }
+
+        function analyzeEmails() {
+            const emails = emailData.emails;
+            
+            // Calculate metrics
+            const uniqueMembers = new Set(emails.map(e => e.from.email)).size;
+            document.getElementById('totalMembers').textContent = uniqueMembers;
+            
+            // Analyze sentiments
+            const sentimentCounts = {};
+            emails.forEach(email => {
+                const sentiments = email.sentiment.split('/');
+                sentiments.forEach(s => {
+                    sentimentCounts[s] = (sentimentCounts[s] || 0) + 1;
+                });
+            });
+            
+            // Calculate satisfaction
+            const positiveCount = (sentimentCounts.happy || 0) + (sentimentCounts.complimentary || 0);
+            const negativeCount = (sentimentCounts.angry || 0) + (sentimentCounts.complaining || 0) + (sentimentCounts.sad || 0);
+            const satisfaction = Math.round((positiveCount / (positiveCount + negativeCount)) * 100);
+            
+            document.getElementById('satisfaction').textContent = satisfaction + '%';
+            const satisfactionTrend = document.getElementById('satisfactionTrend');
+            if (satisfaction > 40) {
+                satisfactionTrend.textContent = '↑ Above target';
+                satisfactionTrend.className = 'metric-change positive';
+            } else {
+                satisfactionTrend.textContent = '↓ Below target';
+                satisfactionTrend.className = 'metric-change negative';
+            }
+            
+            // Critical issues
+            const criticalCount = (sentimentCounts.angry || 0) + Math.floor((sentimentCounts.complaining || 0) / 2);
+            document.getElementById('criticalIssues').textContent = criticalCount;
+            
+            // Engagement score
+            document.getElementById('engagement').textContent = emails.length;
+            
+            // Render sentiment cards
+            renderSentimentCards(sentimentCounts);
+            
+            // Identify key issues
+            identifyKeyIssues(emails);
+            
+            // Member segments
+            analyzeMemberSegments(emails);
+        }
+
+        function drawRadarChart() {
+            const canvas = document.getElementById('radarChart');
+            if (!canvas) {
+                console.error('Canvas element not found');
+                return;
+            }
+            
+            const ctx = canvas.getContext('2d');
+            if (!ctx) {
+                console.error('Cannot get canvas context');
+                return;
+            }
+            
+            // Set canvas size
+            canvas.width = 350;
+            canvas.height = 350;
+            
+            const centerX = canvas.width / 2;
+            const centerY = canvas.height / 2;
+            const radius = 140;
+            
+            // Clear canvas
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            // Enable anti-aliasing
+            ctx.imageSmoothingEnabled = true;
+            
+            // Data
+            const categories = ['Safety', 'Programs', 'Governance', 'Facilities', 'Community', 'Training'];
+            const currentScores = [3.2, 4.5, 2.8, 2.5, 3.8, 4.2];
+            const targetScores = [5, 5, 5, 5, 5, 5];
+            
+            const angleStep = (Math.PI * 2) / categories.length;
+            
+            // Draw background circles
+            ctx.strokeStyle = '#e5e7eb';
+            ctx.lineWidth = 1;
+            
+            // Draw concentric circles
+            for (let i = 1; i <= 5; i++) {
+                ctx.beginPath();
+                ctx.arc(centerX, centerY, (radius * i) / 5, 0, Math.PI * 2);
+                ctx.stroke();
+            }
+            
+            // Draw axes
+            ctx.strokeStyle = '#d1d5db';
+            for (let i = 0; i < categories.length; i++) {
+                const angle = i * angleStep - Math.PI / 2;
+                ctx.beginPath();
+                ctx.moveTo(centerX, centerY);
+                ctx.lineTo(
+                    centerX + Math.cos(angle) * radius,
+                    centerY + Math.sin(angle) * radius
+                );
+                ctx.stroke();
+            }
+            
+            // Draw labels
+            ctx.font = '13px -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, sans-serif';
+            ctx.fillStyle = '#374151';
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            
+            for (let i = 0; i < categories.length; i++) {
+                const angle = i * angleStep - Math.PI / 2;
+                const labelRadius = radius + 25;
+                const x = centerX + Math.cos(angle) * labelRadius;
+                const y = centerY + Math.sin(angle) * labelRadius;
+                
+                // Adjust text alignment based on position
+                if (Math.abs(x - centerX) < 10) {
+                    ctx.textAlign = 'center';
+                } else if (x > centerX) {
+                    ctx.textAlign = 'left';
+                } else {
+                    ctx.textAlign = 'right';
+                }
+                
+                ctx.fillText(categories[i], x, y);
+                
+                // Draw score
+                const scoreRadius = (radius * currentScores[i]) / 5;
+                const scoreX = centerX + Math.cos(angle) * scoreRadius;
+                const scoreY = centerY + Math.sin(angle) * scoreRadius;
+                ctx.textAlign = 'center';
+                ctx.font = '11px -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, sans-serif';
+                ctx.fillStyle = '#dc2626';
+                ctx.fillText(currentScores[i].toFixed(1), scoreX, scoreY - 15);
+                ctx.fillStyle = '#374151';
+                ctx.font = '13px -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, sans-serif';
+            }
+            
+            // Draw target area (green)
+            ctx.beginPath();
+            ctx.strokeStyle = '#16a34a';
+            ctx.lineWidth = 2;
+            ctx.setLineDash([5, 5]);
+            ctx.fillStyle = 'rgba(22, 163, 74, 0.05)';
+            
+            for (let i = 0; i <= categories.length; i++) {
+                const angle = (i % categories.length) * angleStep - Math.PI / 2;
+                const x = centerX + Math.cos(angle) * radius;
+                const y = centerY + Math.sin(angle) * radius;
+                if (i === 0) {
+                    ctx.moveTo(x, y);
+                } else {
+                    ctx.lineTo(x, y);
+                }
+            }
+            ctx.closePath();
+            ctx.fill();
+            ctx.stroke();
+            ctx.setLineDash([]);
+            
+            // Draw current state (red)
+            ctx.beginPath();
+            ctx.strokeStyle = '#dc2626';
+            ctx.lineWidth = 3;
+            ctx.fillStyle = 'rgba(220, 38, 38, 0.15)';
+            
+            for (let i = 0; i <= categories.length; i++) {
+                const angle = (i % categories.length) * angleStep - Math.PI / 2;
+                const score = currentScores[i % categories.length];
+                const x = centerX + Math.cos(angle) * (radius * score / 5);
+                const y = centerY + Math.sin(angle) * (radius * score / 5);
+                if (i === 0) {
+                    ctx.moveTo(x, y);
+                } else {
+                    ctx.lineTo(x, y);
+                }
+            }
+            ctx.closePath();
+            ctx.fill();
+            ctx.stroke();
+            
+            // Draw data points
+            ctx.fillStyle = '#dc2626';
+            for (let i = 0; i < categories.length; i++) {
+                const angle = i * angleStep - Math.PI / 2;
+                const score = currentScores[i];
+                const x = centerX + Math.cos(angle) * (radius * score / 5);
+                const y = centerY + Math.sin(angle) * (radius * score / 5);
+                ctx.beginPath();
+                ctx.arc(x, y, 5, 0, Math.PI * 2);
+                ctx.fill();
+                
+                // Add white center to points
+                ctx.fillStyle = '#ffffff';
+                ctx.beginPath();
+                ctx.arc(x, y, 2, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.fillStyle = '#dc2626';
+            }
+            
+            // Draw center point
+            ctx.fillStyle = '#374151';
+            ctx.beginPath();
+            ctx.arc(centerX, centerY, 3, 0, Math.PI * 2);
+            ctx.fill();
+            
+            // Add scale labels
+            ctx.font = '10px -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, sans-serif';
+            ctx.fillStyle = '#94a3b8';
+            ctx.textAlign = 'center';
+            for (let i = 1; i <= 5; i++) {
+                ctx.fillText(i, centerX - 15, centerY - (radius * i / 5) + 3);
+            }
+        }
+
+        function renderSentimentCards(sentimentCounts) {
+            const container = document.getElementById('sentimentGrid');
+            const total = Object.values(sentimentCounts).reduce((a, b) => a + b, 0);
+            
+            const sentimentColors = {
+                angry: '#dc2626',
+                complaining: '#ea580c',
+                sad: '#2563eb',
+                happy: '#16a34a',
+                political: '#7c3aed',
+                complimentary: '#059669'
+            };
+            
+            container.innerHTML = Object.entries(sentimentCounts)
+                .sort((a, b) => b[1] - a[1])
+                .map(([sentiment, count]) => {
+                    const percentage = Math.round((count / total) * 100);
+                    return `
+                        <div class="sentiment-card">
+                            <div class="label">${sentiment}</div>
+                            <div class="value" style="color: ${sentimentColors[sentiment] || '#1e293b'};">${count}</div>
+                            <div class="percentage">${percentage}% of feedback</div>
+                        </div>
+                    `;
+                }).join('');
+        }
+
+        function identifyKeyIssues(emails) {
+            const issues = [
+                {
+                    title: "Safety Protocol Enforcement",
+                    priority: "high",
+                    details: "Multiple reports of cease-fire violations and inadequate Range Safety Officer coverage are creating dangerous conditions.",
+                    actions: ["Implement mandatory safety certification", "Increase RSO staffing", "Install safety monitoring systems", "Create incident reporting system"],
+                    category: "safety"
+                },
+                {
+                    title: "Political Neutrality & Governance",
+                    priority: "high",
+                    details: "Political divisions and transparency concerns are affecting member unity and organizational trust.",
+                    actions: ["Establish political neutrality policy", "Improve board transparency", "Create independent ethics committee", "Publish meeting minutes"],
+                    category: "governance"
+                },
+                {
+                    title: "Facility Infrastructure",
+                    priority: "medium",
+                    details: "Critical maintenance issues including ventilation systems and equipment failures are impacting member experience.",
+                    actions: ["Repair ventilation system", "Fix target equipment", "Upgrade restroom facilities", "Create maintenance schedule"],
+                    category: "facilities"
+                },
+                {
+                    title: "Program Balance",
+                    priority: "medium",
+                    details: "Shift from family-oriented to tactical programs is alienating traditional members and reducing diversity.",
+                    actions: ["Restore family programs", "Balance tactical/traditional offerings", "Survey member preferences", "Create inclusive programming"],
+                    category: "programs"
+                },
+                {
+                    title: "Gender Equity",
+                    priority: "medium",
+                    details: "Despite 30% female membership, women's programs face facility issues and scheduling conflicts.",
+                    actions: ["Fix women's facilities", "Protect dedicated time slots", "Add female board representation", "Create women's advisory committee"],
+                    category: "membership"
+                }
+            ];
+            
+            const container = document.getElementById('issueList');
+            container.innerHTML = issues.map(issue => `
+                <div class="issue-item">
+                    <div class="issue-header">
+                        <span class="issue-title">${issue.title}</span>
+                        <span class="issue-priority priority-${issue.priority}">${issue.priority}</span>
+                    </div>
+                    <div class="issue-details">${issue.details}</div>
+                    <div class="issue-actions">
+                        ${issue.actions.map(action => `<span class="action-tag">${action}</span>`).join('')}
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function analyzeMemberSegments(emails) {
+            const segments = [
+                {
+                    name: "Safety Advocates",
+                    members: "Robert Martinez, David Kim",
+                    details: "Focus on rigorous safety protocols and operational excellence",
+                    focus: "Priority: Safety enforcement"
+                },
+                {
+                    name: "Youth Champions",
+                    members: "Maria Gonzalez, Destiny Jackson",
+                    details: "Driving youth program growth and new member engagement",
+                    focus: "Priority: Program expansion"
+                },
+                {
+                    name: "Governance Reformers",
+                    members: "Sandra Chen, Barbara Thompson",
+                    details: "Advocating for transparency and equitable representation",
+                    focus: "Priority: Ethical governance"
+                },
+                {
+                    name: "Traditional Members",
+                    members: "Patricia Anderson, Kevin O'Brien",
+                    details: "Preserving club heritage and political neutrality",
+                    focus: "Priority: Mission alignment"
+                },
+                {
+                    name: "Program Supporters",
+                    members: "James Wilson, Michael Rivera",
+                    details: "Active in training programs and veteran initiatives",
+                    focus: "Priority: Service excellence"
+                }
+            ];
+            
+            const container = document.getElementById('memberGrid');
+            container.innerHTML = segments.map(segment => `
+                <div class="member-card">
+                    <div class="member-name">${segment.name}</div>
+                    <div class="member-details">${segment.members}</div>
+                    <div class="member-details" style="margin-top: 8px;">${segment.details}</div>
+                    <div class="member-focus">${segment.focus}</div>
+                </div>
+            `).join('');
+        }
+
+        function setupEventListeners() {
+            const form = document.getElementById('strategyForm');
+            form.addEventListener('submit', (e) => {
+                e.preventDefault();
+                addActionPlan();
+            });
+        }
+
+        function addActionPlan() {
+            const plan = {
+                id: Date.now(),
+                title: document.getElementById('actionTitle').value,
+                category: document.getElementById('actionCategory').value,
+                description: document.getElementById('actionDescription').value,
+                owner: document.getElementById('actionOwner').value,
+                timeline: document.getElementById('actionTimeline').value
+            };
+            
+            actionPlans.push(plan);
+            renderActionPlans();
+            document.getElementById('strategyForm').reset();
+        }
+
+        function renderActionPlans() {
+            const container = document.getElementById('actionPlanList');
+            if (actionPlans.length === 0) {
+                container.innerHTML = '';
+                return;
+            }
+            
+            const timelineLabels = {
+                immediate: '1 Week',
+                short: '1 Month',
+                medium: '3 Months',
+                long: '6+ Months'
+            };
+            
+            container.innerHTML = '<h3 style="margin-bottom: 20px; color: #1e293b;">Strategic Action Plans</h3>' +
+                actionPlans.map(plan => `
+                    <div class="action-plan-item">
+                        <div class="action-plan-header">
+                            <span class="action-plan-title">${plan.title}</span>
+                            <span class="action-plan-timeline">${timelineLabels[plan.timeline]}</span>
+                        </div>
+                        <div class="action-plan-description">${plan.description}</div>
+                        <div class="action-plan-owner">Owner: ${plan.owner}</div>
+                    </div>
+                `).join('');
+        }
+
+        function exportData() {
+            alert('Export functionality would generate a PDF report with all dashboard data and action plans.');
+        }
+
+        // Initialize on load
+        window.addEventListener('DOMContentLoaded', initializeDashboard);
+    </script>
+</body>
+</html>

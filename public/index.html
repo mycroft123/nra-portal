@@ -1,0 +1,3395 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NRA Member Communications Portal - AI Enhanced</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.js"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<style>
+    /* Include all the original styles plus new ones for AI features */
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+    }
+    
+    body {
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        background: #f3f2f1;
+        color: #323130;
+        overflow: hidden;
+    }
+    
+    /* Priority indicators */
+    .priority-indicator {
+        display: inline-block;
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        margin-right: 8px;
+    }
+    
+    .priority-high { background: #d13438; }
+    .priority-medium { background: #ffb900; }
+    .priority-low { background: #10c510; }
+    
+    /* Priority score badge */
+    .priority-score {
+        display: inline-flex;
+        align-items: center;
+        padding: 4px 12px;
+        border-radius: 16px;
+        font-size: 12px;
+        font-weight: 600;
+        margin-left: 8px;
+    }
+    
+    .priority-score.high {
+        background: #fde7e9;
+        color: #a4262c;
+    }
+    
+    .priority-score.medium {
+        background: #fff4ce;
+        color: #8a6100;
+    }
+    
+    .priority-score.low {
+        background: #e7f6e7;
+        color: #0b7209;
+    }
+    
+    /* AI Insights Panel */
+    .ai-insights-panel {
+        background: white;
+        border-radius: 8px;
+        padding: 24px;
+        margin-bottom: 24px;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+    }
+    
+    .ai-insights-header {
+        display: flex;
+        align-items: center;
+        margin-bottom: 16px;
+    }
+    
+    .ai-insights-header i {
+        font-size: 24px;
+        color: #5c2d91;
+        margin-right: 12px;
+    }
+    
+    .ai-insights-header h3 {
+        font-size: 20px;
+        color: #323130;
+    }
+    
+    /* Action items list */
+    .action-items-list {
+        background: white;
+        border-radius: 8px;
+        padding: 16px;
+        margin-top: 16px;
+    }
+    
+    .action-item {
+        display: flex;
+        align-items: flex-start;
+        padding: 12px;
+        border-bottom: 1px solid #edebe9;
+        transition: background 0.2s;
+    }
+    
+    .action-item:hover {
+        background: #faf9f8;
+    }
+    
+    .action-item:last-child {
+        border-bottom: none;
+    }
+    
+    .action-checkbox {
+        margin-right: 12px;
+        margin-top: 2px;
+    }
+    
+    .action-content {
+        flex: 1;
+    }
+    
+    .action-text {
+        font-size: 14px;
+        color: #323130;
+        margin-bottom: 4px;
+    }
+    
+    .action-meta {
+        display: flex;
+        align-items: center;
+        font-size: 12px;
+        color: #605e5c;
+    }
+    
+    .action-deadline {
+        display: inline-flex;
+        align-items: center;
+        margin-left: 16px;
+    }
+    
+    .action-deadline i {
+        margin-right: 4px;
+        font-size: 11px;
+    }
+    
+    /* Sender insights */
+    .sender-insights {
+        background: #faf9f8;
+        border-radius: 8px;
+        padding: 16px;
+        margin-top: 16px;
+    }
+    
+    .sender-stat {
+        display: flex;
+        justify-content: space-between;
+        padding: 8px 0;
+    }
+    
+    .sender-stat-label {
+        color: #605e5c;
+        font-size: 13px;
+    }
+    
+    .sender-stat-value {
+        font-weight: 600;
+        color: #323130;
+    }
+    
+    /* All original styles from the previous file... */
+    .loading-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(255, 255, 255, 0.95);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 1000;
+    }
+    
+    .spinner {
+        width: 40px;
+        height: 40px;
+        border: 3px solid #f3f2f1;
+        border-top: 3px solid #0078d4;
+        border-radius: 50%;
+        animation: spin 1s linear infinite;
+    }
+    
+    @keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+    }
+    
+    .header {
+        background: white;
+        border-bottom: 1px solid #edebe9;
+        padding: 12px 24px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        height: 48px;
+    }
+    
+    .header h1 {
+        font-size: 16px;
+        font-weight: 600;
+        margin-left: 12px;
+        flex: 1;
+    }
+    
+    .header-right {
+        display: flex;
+        align-items: center;
+        gap: 16px;
+    }
+    
+    .status-badge {
+        display: flex;
+        align-items: center;
+        font-size: 12px;
+        color: #605e5c;
+    }
+    
+    .status-dot {
+        width: 8px;
+        height: 8px;
+        background: #10c510;
+        border-radius: 50%;
+        margin-right: 6px;
+    }
+    
+    .main-container {
+        display: flex;
+        height: calc(100vh - 48px);
+    }
+    
+    .sidebar {
+        width: 220px;
+        background: #faf9f8;
+        border-right: 1px solid #edebe9;
+        padding: 24px 0;
+    }
+    
+    .nav-item {
+        display: flex;
+        align-items: center;
+        padding: 8px 24px;
+        color: #605e5c;
+        text-decoration: none;
+        font-size: 14px;
+        transition: all 0.2s;
+        position: relative;
+    }
+    
+    .nav-item:hover {
+        background: #f3f2f1;
+        color: #323130;
+    }
+    
+    .nav-item.active {
+        background: #e1dfdd;
+        color: #323130;
+        font-weight: 600;
+    }
+    
+    .nav-item.active::before {
+        content: '';
+        position: absolute;
+        left: 0;
+        top: 0;
+        bottom: 0;
+        width: 3px;
+        background: #0078d4;
+    }
+    
+    .nav-item i {
+        width: 20px;
+        margin-right: 12px;
+    }
+    
+    .nav-count {
+        margin-left: auto;
+        background: #0078d4;
+        color: white;
+        font-size: 11px;
+        padding: 2px 8px;
+        border-radius: 10px;
+    }
+    
+    .content {
+        flex: 1;
+        overflow: hidden;
+        background: #f3f2f1;
+    }
+    
+    .view {
+        height: 100%;
+        overflow-y: auto;
+    }
+    
+    /* NEW: Email view container for better structure */
+    .email-view-container {
+        display: flex;
+        flex-direction: column;
+        height: 100%;
+    }
+    
+    /* UPDATED: Global filter bar with multi-row support */
+    .global-filter-bar {
+        background: white;
+        border-bottom: 1px solid #edebe9;
+        padding: 16px 24px;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.03);
+    }
+    
+    /* Collapsible Filter Bar Styles - Understated NRA Style */
+    .filter-bar {
+        background: #2c2c2c;  /* Dark gray instead of pure black */
+        padding: 12px;
+        border-radius: 4px;  /* Subtle rounding */
+        transition: all 0.3s ease;
+        position: relative;
+        cursor: pointer;
+        user-select: none;
+        border: 1px solid #3c3c3c;
+    }
+    
+    .filter-bar:hover {
+        background: #333333;  /* Subtle hover */
+        border-color: #404040;
+    }
+    
+    .filter-bar.collapsed {
+        padding: 8px 12px;
+    }
+    
+    .filter-bar.collapsed:hover {
+        background: #333333;
+        border-color: #404040;
+    }
+    
+    .filter-toggle {
+        position: absolute;
+        right: 12px;
+        top: 50%;
+        transform: translateY(-50%);
+        background: transparent;
+        border: none;
+        padding: 6px;
+        cursor: pointer;
+        font-size: 12px;
+        color: #e0e0e0;  /* Light gray text */
+        transition: all 0.2s;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        z-index: 10;
+        pointer-events: none;
+        font-weight: 500;  /* Medium weight */
+    }
+    
+    .filter-toggle i {
+        transition: transform 0.3s ease;
+        font-size: 14px;
+    }
+    
+    .filter-bar.collapsed .filter-toggle i {
+        transform: rotate(180deg);
+    }
+    
+    .filter-content {
+        transition: all 0.3s ease;
+        overflow: hidden;
+    }
+    
+    .filter-bar.collapsed .filter-content {
+        height: 0;
+        opacity: 0;
+        margin: 0;
+    }
+    
+    /* Prevent filter chips from being clickable when collapsed */
+    .filter-bar.collapsed .filter-chip {
+        pointer-events: none;
+    }
+    
+    /* Active filter summary - shown when collapsed */
+    .active-filters-summary {
+        display: none;
+        align-items: center;
+        gap: 8px;
+        margin-right: 30px; /* Space for toggle icon */
+        flex-wrap: wrap;
+    }
+    
+    .filter-bar.collapsed .active-filters-summary {
+        display: flex;
+    }
+    
+    /* Active filter pill - Understated Style */
+    .active-filter-pill {
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+        padding: 4px 10px;
+        background: #0078d4;  /* Back to blue */
+        color: white;
+        border-radius: 3px;  /* Slight rounding */
+        font-size: 11px;
+        font-weight: 500;
+        pointer-events: auto;
+    }
+    
+    .active-filter-pill .remove-filter {
+        cursor: pointer;
+        margin-left: 4px;
+        font-size: 14px;
+        line-height: 1;
+        opacity: 0.8;
+        transition: opacity 0.2s;
+    }
+    
+    .active-filter-pill .remove-filter:hover {
+        opacity: 1;
+    }
+    
+    .filter-summary-text {
+        color: #d0d0d0;
+        font-size: 12px;
+        font-weight: 500;
+    }
+    
+    /* Clear all button in summary - Understated Style */
+    .summary-clear-btn {
+        margin-left: 8px;
+        padding: 4px 10px;
+        font-size: 11px;
+        background: rgba(255, 255, 255, 0.1);
+        border: 1px solid rgba(255, 255, 255, 0.3);
+        border-radius: 3px;
+        cursor: pointer;
+        pointer-events: auto;
+        transition: all 0.2s;
+        color: #d0d0d0;
+        font-weight: 500;
+    }
+    
+    .summary-clear-btn:hover {
+        background: rgba(255, 255, 255, 0.2);
+        border-color: rgba(255, 255, 255, 0.5);
+        color: #ffffff;
+    }
+    
+    /* NEW: Filter row for organizing filters by category */
+    .filter-row {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin-bottom: 10px;
+        flex-wrap: wrap;
+        padding-bottom: 10px;
+        border-bottom: 1px solid #edebe9;
+    }
+    
+    .filter-row:last-child {
+        margin-bottom: 0;
+        padding-bottom: 0;
+        border-bottom: none;
+    }
+    
+    /* UPDATED: Filter category labels - Understated Style */
+    .filter-category-label {
+        font-weight: 600;
+        color: #d0d0d0;  /* Light gray */
+        font-size: 11px;
+        letter-spacing: 0.5px;
+        text-transform: uppercase;
+        margin-right: 8px;
+        min-width: 85px;
+    }
+    
+    /* UPDATED: Filter chip styling - Understated Style */
+    .filter-chip {
+        display: inline-block;
+        padding: 5px 12px;
+        background: #ffffff;
+        border: 1px solid #d0d0d0;
+        border-radius: 4px;  /* Subtle rounding */
+        font-size: 12px;
+        color: #333333;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        white-space: nowrap;
+        font-weight: 500;
+    }
+    
+    .filter-chip:hover {
+        background: #f8f8f8;
+        border-color: #666666;
+        color: #000000;
+    }
+    
+    .filter-chip.active {
+        background: #0078d4;  /* Back to blue */
+        color: white;
+        border-color: #0078d4;
+    }
+    
+    .filter-chip.active:hover {
+        background: #0056b3;  /* Darker blue */
+        border-color: #0056b3;
+    }
+    
+    /* Responsive design for filter rows */
+    @media (max-width: 768px) {
+        .filter-category-label {
+            min-width: 100%;
+            margin-bottom: 5px;
+        }
+        
+        .filter-row {
+            flex-direction: column;
+            align-items: flex-start;
+        }
+    }
+    
+    /* Adjust the first filter row when expanded */
+    .filter-bar:not(.collapsed) .filter-row:first-child {
+        padding-right: 100px; /* Space for toggle button */
+    }
+    
+    /* Preset filters section - Understated Style */
+    .preset-filters {
+        padding: 12px 24px;
+        background: #e8e8e8;  /* Slightly darker gray to match filter bar theme */
+        border-bottom: 1px solid #d0d0d0;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+    }
+    
+    .preset-label {
+        font-size: 12px;
+        color: #4a4a4a;  /* Darker gray for better contrast */
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+    
+    .preset-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 6px 14px;
+        background: #ffffff;
+        border: 1px solid #b8b8b8;  /* Darker border */
+        border-radius: 4px;  /* Subtle rounding */
+        font-size: 12px;
+        color: #2c2c2c;  /* Match filter bar color */
+        cursor: pointer;
+        transition: all 0.2s;
+        white-space: nowrap;
+        font-weight: 500;
+    }
+    
+    .preset-btn:hover {
+        background: #f5f5f5;
+        border-color: #40a6ff;  /* Light blue border on hover */
+        color: #2c2c2c;
+        transform: translateY(-1px);
+        box-shadow: 0 2px 4px rgba(0,0,0,0.08);
+    }
+    
+    .preset-btn.active {
+        background: #2698fb;  /* Light blue */
+        color: white;
+        border-color: #40a6ff;
+    }
+    
+    .preset-btn.active:hover {
+        background: #2196f3;  /* Slightly darker light blue */
+        border-color: #2196f3;
+    }
+    
+    .preset-btn i {
+        font-size: 11px;
+    }
+    
+    /* Divider between presets - Understated Style */
+    .preset-divider {
+        width: 1px;
+        height: 20px;
+        background: #b8b8b8;  /* Match border color */
+        margin: 0 4px;
+    }
+    
+    /* Email content area below filter bar */
+    .email-content-area {
+        flex: 1;
+        display: flex;
+        overflow: hidden;
+    }
+    
+    .email-list-panel {
+        width: 350px;
+        background: white;
+        border-right: 1px solid #edebe9;
+        display: flex;
+        flex-direction: column;
+        height: 100%;
+    }
+    
+    .list-header {
+        padding: 16px;
+        border-bottom: 1px solid #edebe9;
+    }
+    
+    .search-box {
+        width: 100%;
+        padding: 8px 12px 8px 36px;
+        border: 1px solid #edebe9;
+        border-radius: 4px;
+        font-size: 14px;
+    }
+    
+    .email-list {
+        flex: 1;
+        overflow-y: auto;
+    }
+    
+    .email-item {
+        padding: 12px 16px;
+        border-bottom: 1px solid #edebe9;
+        cursor: pointer;
+        transition: background 0.2s;
+        position: relative;
+        min-height: 120px; /* Ensure space for tags */
+    }
+    
+    .email-item:hover {
+        background: #faf9f8;
+    }
+    
+    .email-item.selected {
+        background: #e1dfdd;
+    }
+    
+    .email-header-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        margin-bottom: 4px;
+    }
+    
+    .email-from {
+        font-weight: 600;
+        font-size: 14px;
+        color: #323130;
+    }
+    
+    .email-time {
+        font-size: 12px;
+        color: #605e5c;
+    }
+    
+    .email-subject {
+        font-size: 14px;
+        color: #323130;
+        margin-bottom: 4px;
+    }
+    
+    .email-preview {
+        font-size: 13px;
+        color: #605e5c;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        margin-bottom: 8px;
+    }
+    
+    .sentiment-badge {
+        display: inline-block;
+        padding: 2px 8px;
+        border-radius: 12px;
+        font-size: 11px;
+        font-weight: 500;
+        margin-right: 4px;
+    }
+    
+    .sentiment-happy { background: #e7f6e7; color: #0b7209; }
+    .sentiment-complimentary { background: #e7f3ff; color: #004578; }
+    .sentiment-angry { background: #fde7e9; color: #a4262c; }
+    .sentiment-complaining { background: #fff4ce; color: #8a6100; }
+    .sentiment-political { background: #f3e5f5; color: #5c2d91; }
+    .sentiment-sad { background: #f3f2f1; color: #605e5c; }
+    .sentiment-neutral { background: #f3f2f1; color: #605e5c; }
+    .sentiment-positive { background: #e7f6e7; color: #0b7209; }
+    .sentiment-negative { background: #fde7e9; color: #a4262c; }
+    .sentiment-mixed { background: #fff4ce; color: #8a6100; }
+    .sentiment-concerned { background: #e7f3ff; color: #004578; }
+    .sentiment-complaint { background: #fde7e9; color: #a4262c; }
+    .sentiment-praise { background: #e7f6e7; color: #0b7209; }
+    .sentiment-request { background: #e7f3ff; color: #004578; }
+    .sentiment-concern { background: #fff4ce; color: #8a6100; }
+    .sentiment-suggestion { background: #e7e6ff; color: #5c2d91; }
+    .sentiment-question { background: #f3f2f1; color: #605e5c; }
+    
+    .sentiment-badge.sentiment-political:hover {
+        background: #e3d7e5;
+        text-decoration: underline;
+    }
+    
+    /* Tag container styling */
+    .email-item > div:last-child {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 4px;
+        margin-top: 8px;
+        max-height: 60px;
+        overflow-y: auto;
+    }
+    
+    .detail-panel {
+        flex: 1;
+        background: white;
+        display: flex;
+        flex-direction: column;
+        position: relative;
+    }
+    
+    .detail-panel.ai-open {
+        margin-right: 380px;
+    }
+    
+    .detail-header {
+        padding: 16px;
+        border-bottom: 1px solid #edebe9;
+    }
+    
+    .detail-toolbar {
+        display: flex;
+        gap: 8px;
+    }
+    
+    .toolbar-btn {
+        padding: 8px 16px;
+        border: 1px solid #edebe9;
+        border-radius: 4px;
+        background: white;
+        font-size: 14px;
+        cursor: pointer;
+        transition: all 0.2s;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+    }
+    
+    .toolbar-btn:hover {
+        background: #faf9f8;
+    }
+    
+    .toolbar-btn.primary {
+        background: #0078d4;
+        color: white;
+        border-color: #0078d4;
+    }
+    
+    .toolbar-btn.primary:hover {
+        background: #106ebe;
+    }
+    
+    .ai-toggle-toolbar-btn {
+        margin-left: auto;
+        padding: 8px 16px;
+        border: 1px solid #5c2d91;
+        border-radius: 4px;
+        background: white;
+        color: #5c2d91;
+        font-size: 14px;
+        cursor: pointer;
+        transition: all 0.2s;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+    }
+    
+    .ai-toggle-toolbar-btn:hover {
+        background: #5c2d91;
+        color: white;
+    }
+    
+    .ai-toggle-toolbar-btn.active {
+        background: #5c2d91;
+        color: white;
+    }
+    
+    .detail-content {
+        flex: 1;
+        padding: 24px;
+        overflow-y: auto;
+        max-height: calc(100vh - 48px - 64px); /* Account for header and toolbar */
+    }
+    
+    .empty-state {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        height: 100%;
+        color: #605e5c;
+    }
+    
+    .empty-state i {
+        font-size: 48px;
+        margin-bottom: 16px;
+        opacity: 0.5;
+    }
+    
+    .dashboard-view {
+        padding: 24px;
+    }
+    
+    .dashboard-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 16px;
+        margin-bottom: 24px;
+    }
+    
+    .stat-card {
+        background: white;
+        padding: 24px;
+        border-radius: 8px;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        text-align: center;
+    }
+    
+    .stat-number {
+        font-size: 36px;
+        font-weight: 600;
+        color: #0078d4;
+        margin-bottom: 8px;
+    }
+    
+    .stat-label {
+        font-size: 14px;
+        color: #605e5c;
+    }
+    
+    .chart-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 24px;
+        margin-bottom: 24px;
+    }
+    
+    .chart-card {
+        background: white;
+        padding: 24px;
+        border-radius: 8px;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+    }
+    
+    .chart-title {
+        font-size: 18px;
+        margin-bottom: 16px;
+        color: #323130;
+    }
+    
+    .chart-container {
+        height: 300px;
+        position: relative;
+    }
+    
+    .ai-assistant {
+        background: white;
+        padding: 24px;
+        border-radius: 8px;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+    }
+    
+    .ai-panel {
+        position: fixed;
+        right: -380px;
+        top: 48px;
+        width: 380px;
+        height: calc(100vh - 48px);
+        background: white;
+        border-left: 1px solid #edebe9;
+        transition: right 0.3s ease;
+        z-index: 100;
+        display: flex;
+        flex-direction: column;
+    }
+    
+    .ai-panel.open {
+        right: 0;
+    }
+    
+    .ai-panel-header {
+        padding: 16px;
+        border-bottom: 1px solid #edebe9;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+    }
+    
+    .ai-panel-title {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-weight: 600;
+        color: #5c2d91;
+    }
+    
+    .ai-close-btn {
+        width: 32px;
+        height: 32px;
+        border: none;
+        background: none;
+        cursor: pointer;
+        color: #605e5c;
+        font-size: 16px;
+        border-radius: 4px;
+        transition: all 0.2s;
+    }
+    
+    .ai-close-btn:hover {
+        background: #f3f2f1;
+        color: #323130;
+    }
+    
+    .ai-panel-content {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        overflow: hidden;
+    }
+    
+    .context-badge {
+        margin: 16px;
+        padding: 8px 16px;
+        background: #faf9f8;
+        border-radius: 16px;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 13px;
+        color: #605e5c;
+        align-self: flex-start;
+    }
+    
+    .ai-chat-container {
+        flex: 1;
+        overflow-y: auto;
+        padding: 16px;
+    }
+    
+    .message {
+        display: flex;
+        gap: 12px;
+        margin-bottom: 16px;
+    }
+    
+    .message.user {
+        flex-direction: row-reverse;
+    }
+    
+    .message-avatar {
+        width: 32px;
+        height: 32px;
+        border-radius: 50%;
+        background: #5c2d91;
+        color: white;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 14px;
+        font-weight: 600;
+        flex-shrink: 0;
+    }
+    
+    .message.user .message-avatar {
+        background: #0078d4;
+    }
+    
+    .message-content {
+        max-width: 80%;
+        padding: 12px;
+        background: #f3f2f1;
+        border-radius: 8px;
+        font-size: 14px;
+        line-height: 1.5;
+    }
+    
+    .message.user .message-content {
+        background: #e7f3ff;
+    }
+    
+    .suggestion-buttons {
+        margin-top: 12px;
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+    }
+    
+    .suggestion-btn {
+        padding: 8px 12px;
+        background: white;
+        border: 1px solid #edebe9;
+        border-radius: 4px;
+        text-align: left;
+        cursor: pointer;
+        font-size: 13px;
+        transition: all 0.2s;
+    }
+    
+    .suggestion-btn:hover {
+        background: #faf9f8;
+        border-color: #0078d4;
+        color: #0078d4;
+    }
+    
+    .chat-input-group {
+        padding: 16px;
+        border-top: 1px solid #edebe9;
+        display: flex;
+        gap: 8px;
+    }
+    
+    .chat-input {
+        flex: 1;
+        padding: 8px 12px;
+        border: 1px solid #edebe9;
+        border-radius: 4px;
+        font-size: 14px;
+    }
+    
+    .members-view {
+        padding: 24px;
+    }
+    
+    .members-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+        gap: 16px;
+    }
+    
+    .member-card {
+        background: white;
+        border-radius: 8px;
+        padding: 20px;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        cursor: pointer;
+        transition: all 0.2s;
+    }
+    
+    .member-card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    }
+    
+    .member-header {
+        display: flex;
+        align-items: flex-start;
+        gap: 16px;
+        margin-bottom: 16px;
+    }
+    
+    .member-avatar {
+        width: 64px;
+        height: 64px;
+        border-radius: 50%;
+        background-size: cover;
+        background-position: center;
+    }
+    
+    .member-info {
+        flex: 1;
+    }
+    
+    .member-name {
+        font-size: 16px;
+        font-weight: 600;
+        margin-bottom: 4px;
+    }
+    
+    .member-role {
+        font-size: 14px;
+        color: #0078d4;
+        margin-bottom: 8px;
+    }
+    
+    .member-badges {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 4px;
+    }
+    
+    .member-badge {
+        display: inline-block;
+        padding: 2px 8px;
+        background: #e7f3ff;
+        color: #004578;
+        border-radius: 12px;
+        font-size: 11px;
+        font-weight: 500;
+    }
+    
+    .member-stats {
+        display: flex;
+        gap: 24px;
+        margin-bottom: 16px;
+        padding-bottom: 16px;
+        border-bottom: 1px solid #edebe9;
+    }
+    
+    .member-stat {
+        text-align: center;
+    }
+    
+    .member-stat-value {
+        font-size: 20px;
+        font-weight: 600;
+        color: #0078d4;
+    }
+    
+    .member-stat-label {
+        font-size: 12px;
+        color: #605e5c;
+    }
+    
+    .member-bio {
+        font-size: 14px;
+        color: #605e5c;
+        line-height: 1.5;
+    }
+    
+    .member-modal {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(0,0,0,0.5);
+        display: none;
+        align-items: center;
+        justify-content: center;
+        z-index: 1000;
+    }
+    
+    .member-modal-content {
+        background: white;
+        border-radius: 8px;
+        width: 90%;
+        max-width: 600px;
+        max-height: 90vh;
+        overflow: hidden;
+        display: flex;
+        flex-direction: column;
+    }
+    
+    .member-modal-header {
+        padding: 24px;
+        border-bottom: 1px solid #edebe9;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+    }
+    
+    .member-modal-close {
+        width: 32px;
+        height: 32px;
+        border: none;
+        background: none;
+        cursor: pointer;
+        color: #605e5c;
+        font-size: 20px;
+        border-radius: 4px;
+        transition: all 0.2s;
+    }
+    
+    .member-modal-close:hover {
+        background: #f3f2f1;
+        color: #323130;
+    }
+    
+    .member-modal-body {
+        padding: 24px;
+        overflow-y: auto;
+    }
+    
+    .member-detail-header {
+        display: flex;
+        gap: 24px;
+        margin-bottom: 24px;
+    }
+    
+    .member-detail-avatar {
+        width: 120px;
+        height: 120px;
+        border-radius: 8px;
+        background-size: cover;
+        background-position: center;
+    }
+    
+    .member-detail-info {
+        flex: 1;
+    }
+    
+    .member-achievements {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+    }
+    
+    .achievement {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 12px;
+        background: #faf9f8;
+        border-radius: 8px;
+    }
+    
+    .achievement-icon {
+        font-size: 24px;
+    }
+    
+    .achievement-text {
+        flex: 1;
+        font-size: 14px;
+    }
+    
+    @keyframes highlight-from-chat {
+        0% { background-color: #fff4ce; }
+        100% { background-color: transparent; }
+    }
+    
+    .highlight-from-chat {
+        animation: highlight-from-chat 0.5s ease-out;
+    }
+    
+    /* Topic filter section in dashboard */
+    .topic-filter-section {
+        background: white;
+        border-radius: 8px;
+        padding: 24px;
+        margin-bottom: 24px;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+    }
+    
+    .topic-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+        gap: 12px;
+        margin-top: 16px;
+    }
+    
+    .topic-card {
+        background: #faf9f8;
+        padding: 12px;
+        border-radius: 8px;
+        text-align: center;
+        cursor: pointer;
+        transition: all 0.2s;
+        border: 1px solid transparent;
+    }
+    
+    .topic-card:hover {
+        background: #e1dfdd;
+        border-color: #0078d4;
+        transform: translateY(-2px);
+    }
+    
+    .topic-card-name {
+        font-weight: 600;
+        margin-bottom: 4px;
+        color: #323130;
+    }
+    
+    .topic-card-count {
+        font-size: 24px;
+        color: #0078d4;
+        font-weight: 600;
+    }
+</style>
+</head>
+<body>
+<div class="loading-overlay" id="loadingOverlay">
+<div class="spinner"></div>
+</div>
+
+<!-- Header -->
+<div class="header">
+<i class="fas fa-bullseye" style="font-size: 20px;"></i>
+<h1>NRA Member Communications Portal - AI Enhanced</h1>
+<div class="header-right">
+    <div class="status-badge">
+        <div class="status-dot"></div>
+        <span id="connectionStatus">Connected</span>
+    </div>
+    <i class="fas fa-user-circle" style="font-size: 24px;"></i>
+</div>
+</div>
+
+<!-- Main Container -->
+<div class="main-container">
+<!-- Sidebar -->
+<div class="sidebar">
+    <a href="#" class="nav-item active" onclick="showView('emails')">
+        <i class="fas fa-inbox"></i>
+        <span>Inbox</span>
+        <span class="nav-count" id="inboxCount">0</span>
+    </a>
+    <a href="#" class="nav-item" onclick="showView('priority')">
+        <i class="fas fa-exclamation-circle"></i>
+        <span>Priority</span>
+        <span class="nav-count" id="priorityCount">0</span>
+    </a>
+    <a href="#" class="nav-item" onclick="showView('actions')">
+        <i class="fas fa-tasks"></i>
+        <span>Action Items</span>
+        <span class="nav-count" id="actionCount">0</span>
+    </a>
+    <a href="#" class="nav-item" onclick="showView('dashboard')">
+        <i class="fas fa-chart-line"></i>
+        <span>Analytics</span>
+    </a>
+    <a href="#" class="nav-item" onclick="showView('insights')">
+        <i class="fas fa-brain"></i>
+        <span>AI Insights</span>
+    </a>
+    <a href="#" class="nav-item">
+        <i class="fas fa-archive"></i>
+        <span>Archive</span>
+    </a>
+</div>
+
+<!-- Content Area -->
+<div class="content">
+    <!-- Email View -->
+    <div id="emailView" class="view email-view-container" style="display: flex;">
+
+<!-- Global Filter Bar -->
+<div class="filter-bar">
+    <!-- Basic Filters Row -->
+    <div class="filter-row">
+        <div class="filter-chip active" onclick="filterEmails('all', this)">All</div>
+    </div>
+    
+    <!-- Sentiment Filters Row -->
+    <div class="filter-row">
+        <span class="filter-category-label">SENTIMENT:</span>
+        <div class="filter-chip" onclick="filterBySentiment('complaint', this)">Complaint</div>
+        <div class="filter-chip" onclick="filterBySentiment('praise', this)">Praise</div>
+        <div class="filter-chip" onclick="filterBySentiment('request', this)">Request</div>
+        <div class="filter-chip" onclick="filterBySentiment('concern', this)">Concern</div>
+        <div class="filter-chip" onclick="filterBySentiment('suggestion', this)">Suggestion</div>
+        <div class="filter-chip" onclick="filterBySentiment('question', this)">Question</div>
+    </div>
+    
+    <!-- Priority Filters Row -->
+    <div class="filter-row">
+        <span class="filter-category-label">PRIORITY:</span>
+        <div class="filter-chip" onclick="filterEmails('critical', this)">Critical (9-10)</div>
+        <div class="filter-chip" onclick="filterEmails('high', this)">High (7-8)</div>
+        <div class="filter-chip" onclick="filterEmails('medium', this)">Medium (5-6)</div>
+        <div class="filter-chip" onclick="filterEmails('low', this)">Low (1-4)</div>
+    </div>
+    
+    <!-- Response Required Filters Row 
+    <div class="filter-row">
+        <span class="filter-category-label">RESPONSE:</span>
+        <div class="filter-chip" onclick="filterEmails('response:yes-direct', this)">Direct Response</div>
+        <div class="filter-chip" onclick="filterEmails('response:yes-complaint', this)">Complaint Response</div>
+        <div class="filter-chip" onclick="filterEmails('response:yes-request', this)">Request Response</div>
+        <div class="filter-chip" onclick="filterEmails('response:maybe', this)">Maybe</div>
+        <div class="filter-chip" onclick="filterEmails('response:no', this)">No Response</div>
+    </div>-->
+    
+    <!-- Topic Category Filters Row 
+    <div class="filter-row">
+        <span class="filter-category-label">CATEGORY:</span>
+        <div class="filter-chip" onclick="filterEmails('topic-category:membership', this)">Membership</div>
+        <div class="filter-chip" onclick="filterEmails('topic-category:leadership', this)">Leadership</div>
+        <div class="filter-chip" onclick="filterEmails('topic-category:political', this)">Political</div>
+        <div class="filter-chip" onclick="filterEmails('topic-category:communications', this)">Communications</div>
+        <div class="filter-chip" onclick="filterEmails('topic-category:operations', this)">Operations</div>
+        <div class="filter-chip" onclick="filterEmails('topic-category:personal', this)">Personal</div>
+    </div>-->
+    
+    <!-- Dynamic Topic Filters Row -->
+    <div class="filter-row" id="dynamicTopicFilters"></div>
+</div>
+        
+        <!-- Email Content Area -->
+        <div class="email-content-area">
+            <!-- Email List Panel -->
+            <div class="email-list-panel">
+                <div class="list-header">
+                    <div style="position: relative;">
+                        <i class="fas fa-search search-icon" style="position: absolute; left: 12px; top: 8px; color: #605e5c;"></i>
+                        <input type="text" class="search-box" placeholder="Search emails" id="searchBox" onkeyup="searchEmails()">
+                    </div>
+                </div>
+                <div class="email-list" id="emailList">
+                    <!-- Emails will be populated here -->
+                </div>
+            </div>
+
+            <!-- Detail Panel -->
+            <div class="detail-panel" id="detailPanel">
+                <div id="emailDetail" style="display: none;">
+                    <div class="detail-header">
+                        <div class="detail-toolbar">
+                            <button class="toolbar-btn">
+                                <i class="fas fa-reply"></i> Reply
+                            </button>
+                            <button class="toolbar-btn">
+                                <i class="fas fa-reply-all"></i> Reply All
+                            </button>
+                            <button class="toolbar-btn">
+                                <i class="fas fa-share"></i> Forward
+                            </button>
+                            <button class="toolbar-btn">
+                                <i class="fas fa-trash"></i> Delete
+                            </button>
+                            <button class="toolbar-btn">
+                                <i class="fas fa-archive"></i> Archive
+                            </button>
+                            <button class="ai-toggle-toolbar-btn" id="aiToggleBtn" onclick="toggleAIPanel()">
+                                <i class="fas fa-robot"></i> AI Assistant
+                            </button>
+                        </div>
+                    </div>
+                    <div class="detail-content" id="emailContent">
+                        <!-- Email content will be displayed here -->
+                    </div>
+                </div>
+                <div id="emptyDetail" class="empty-state">
+                    <i class="fas fa-envelope-open"></i>
+                    <p>Select an email to read</p>
+                </div>
+            </div>
+
+            <!-- AI Assistant Panel (Third Panel) -->
+            <div class="ai-panel" id="aiPanel">
+                <div class="ai-panel-header">
+                    <div class="ai-panel-title">
+                        <i class="fas fa-robot"></i>
+                        AI Assistant
+                    </div>
+                    <button class="ai-close-btn" onclick="toggleAIPanel()">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+                <div class="ai-panel-content">
+                    <div class="context-badge" id="contextBadge">
+                        <i class="fas fa-inbox"></i>
+                        <span id="contextText">Viewing Inbox</span>
+                    </div>
+                    <div class="ai-chat-container" id="aiChatContainer">
+                        <div class="message">
+                            <div class="message-avatar">AI</div>
+                            <div class="message-content" id="aiWelcomeMessage">
+                                I'm here to help analyze your emails. I can see you're viewing the inbox. Try these questions:
+                                <div class="suggestion-buttons">
+                                    <button class="suggestion-btn" onclick="askSuggestion('What\'s the most urgent issue in these emails?')">What's the most urgent issue in these emails?</button>
+                                    <button class="suggestion-btn" onclick="askSuggestion('Summarize the concerns raised')">Summarize the concerns raised</button>
+                                    <button class="suggestion-btn" onclick="askSuggestion('Who needs a response first?')">Who needs a response first?</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="chat-input-group">
+                        <input type="text" class="chat-input" id="aiChatInput" placeholder="Ask about what you're viewing..." onkeypress="if(event.key==='Enter') sendAIMessage()">
+                        <button class="toolbar-btn primary" onclick="sendAIMessage()">
+                            <i class="fas fa-paper-plane"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Priority View -->
+    <div id="priorityView" class="view" style="display: none; padding: 24px;">
+        <h2 style="margin-bottom: 24px;">Priority Emails</h2>
+        
+        <div class="filter-bar" style="margin-bottom: 24px;">
+            <div class="filter-chip active" onclick="filterPriority('all', this)">All Priorities</div>
+            <div class="filter-chip" onclick="filterPriority('high', this)">
+                <span class="priority-indicator priority-high"></span>High Priority
+            </div>
+            <div class="filter-chip" onclick="filterPriority('medium', this)">
+                <span class="priority-indicator priority-medium"></span>Medium Priority
+            </div>
+            <div class="filter-chip" onclick="filterPriority('low', this)">
+                <span class="priority-indicator priority-low"></span>Low Priority
+            </div>
+        </div>
+
+        <div id="priorityEmailsList">
+            <!-- Priority emails will be displayed here -->
+        </div>
+    </div>
+
+    <!-- Action Items View -->
+    <div id="actionsView" class="view" style="display: none; padding: 24px;">
+        <h2 style="margin-bottom: 24px;">Action Items</h2>
+        
+        <div class="ai-insights-panel">
+            <div class="ai-insights-header">
+                <i class="fas fa-lightbulb"></i>
+                <h3>Action Summary</h3>
+            </div>
+            <div id="actionSummary">
+                <!-- AI summary of action items will appear here -->
+            </div>
+        </div>
+
+        <div class="action-items-list" id="actionItemsList">
+            <!-- Action items will be populated here -->
+        </div>
+    </div>
+
+    <!-- Dashboard View -->
+    <div id="dashboardView" class="view dashboard-view" style="display: none;">
+        <h2 style="margin-bottom: 24px; font-size: 28px;">Analytics Dashboard</h2>
+        
+        <div class="dashboard-grid">
+            <div class="stat-card">
+                <div class="stat-number" id="totalStat">0</div>
+                <div class="stat-label">Total Emails</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" id="avgPriorityStat">0</div>
+                <div class="stat-label">Avg Priority Score</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" id="requireActionStat">0</div>
+                <div class="stat-label">Require Action</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" id="analyzedStat">0</div>
+                <div class="stat-label">AI Analyzed</div>
+            </div>
+        </div>
+
+        <div class="chart-grid">
+            <div class="chart-card">
+                <h3 class="chart-title">Sentiment Distribution</h3>
+                <div class="chart-container">
+                    <canvas id="sentimentChart"></canvas>
+                </div>
+            </div>
+            <div class="chart-card">
+                <h3 class="chart-title">Urgency Distribution</h3>
+                <div class="chart-container">
+                    <canvas id="urgencyChart"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <div class="chart-grid">
+            <div class="chart-card">
+                <h3 class="chart-title">Top Topics</h3>
+                <div class="chart-container">
+                    <canvas id="topicsChart"></canvas>
+                </div>
+            </div>
+            <div class="chart-card">
+                <h3 class="chart-title">Top Senders by Volume</h3>
+                <div class="chart-container">
+                    <canvas id="sendersChart"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- AI Insights View -->
+    <div id="insightsView" class="view" style="display: none; padding: 24px;">
+        <h2 style="margin-bottom: 24px;">AI Analysis & Insights</h2>
+        
+        <div class="ai-insights-panel" style="margin-bottom: 24px;">
+            <div class="ai-insights-header">
+                <i class="fas fa-chart-line"></i>
+                <h3>Executive Summary</h3>
+            </div>
+            <div id="executiveSummary" style="font-size: 16px; line-height: 1.8; color: #323130;">
+                <!-- Executive summary will be populated here -->
+            </div>
+        </div>
+
+        <div class="ai-insights-panel" style="margin-bottom: 24px;">
+            <div class="ai-insights-header">
+                <i class="fas fa-key"></i>
+                <h3>Key Points</h3>
+            </div>
+            <ul id="keyPoints" style="font-size: 15px; line-height: 1.8; padding-left: 20px;">
+                <!-- Key points will be populated here -->
+            </ul>
+        </div>
+
+        <div class="ai-insights-panel" style="margin-bottom: 24px;">
+            <div class="ai-insights-header">
+                <i class="fas fa-exclamation-triangle"></i>
+                <h3>Risks & Opportunities</h3>
+            </div>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 24px;">
+                <div>
+                    <h4 style="color: #a4262c; margin-bottom: 12px;">Risks</h4>
+                    <ul id="risksList" style="font-size: 14px; line-height: 1.6; color: #605e5c;">
+                        <!-- Risks will be populated here -->
+                    </ul>
+                </div>
+                <div>
+                    <h4 style="color: #10c510; margin-bottom: 12px;">Opportunities</h4>
+                    <ul id="opportunitiesList" style="font-size: 14px; line-height: 1.6; color: #605e5c;">
+                        <!-- Opportunities will be populated here -->
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="ai-insights-panel">
+            <div class="ai-insights-header">
+                <i class="fas fa-user-friends"></i>
+                <h3>Key Stakeholders</h3>
+            </div>
+            <div id="stakeholdersList" style="display: flex; flex-wrap: wrap; gap: 8px;">
+                <!-- Stakeholders will be populated here -->
+            </div>
+        </div>
+    </div>
+</div>
+</div>
+
+<script>
+    // Configuration
+    const API_BASE_URL = 'http://localhost:3000/api';
+    let emailData = { emails: [], summary: {} };
+    let currentFilter = 'all';
+    let selectedEmail = null;
+    let charts = {};
+    let currentView = 'emails';
+    let aiPanelOpen = false;
+    let topTopicsList = [];
+
+    // Multi-select filter state
+    let activeFilters = {
+        sentiment: [],
+        priority: [],
+        response: [],
+        category: [],
+        topics: []
+    };
+
+    // Helper function to extract name from email
+    function extractNameFromEmail(email) {
+        const username = email.split('@')[0];
+        const name = username
+            .replace(/[._-]/g, ' ')
+            .split(' ')
+            .map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
+            .join(' ');
+        return name;
+    }
+
+    // Helper function to format date
+    function formatDate(dateString) {
+        const date = new Date(dateString);
+        const now = new Date();
+        const diffMs = now - date;
+        const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
+        
+        if (diffDays === 0) {
+            const diffHours = Math.floor(diffMs / (1000 * 60 * 60));
+            if (diffHours === 0) {
+                const diffMinutes = Math.floor(diffMs / (1000 * 60));
+                return diffMinutes === 0 ? 'Just now' : `${diffMinutes} minutes ago`;
+            }
+            return diffHours === 1 ? '1 hour ago' : `${diffHours} hours ago`;
+        } else if (diffDays === 1) {
+            return 'Yesterday';
+        } else if (diffDays < 7) {
+            return `${diffDays} days ago`;
+        } else {
+            return date.toLocaleDateString();
+        }
+    }
+
+    // Initialize
+    window.onload = async function() {
+        await loadData();
+        setTimeout(() => {
+            document.getElementById('loadingOverlay').style.display = 'none';
+        }, 500);
+    };
+
+    async function loadData() {
+        try {
+            // Load emails with AI analysis
+            const emailResponse = await fetch(`${API_BASE_URL}/emails`);
+            emailData = await emailResponse.json();
+            
+            // Load stats
+            const statsResponse = await fetch(`${API_BASE_URL}/stats`);
+            const stats = await statsResponse.json();
+            
+            // Load action items
+            const actionResponse = await fetch(`${API_BASE_URL}/action-items`);
+            const actionData = await actionResponse.json();
+            
+            updateCounts(stats, actionData);
+            
+            // Create topic filter chips
+            if (stats.topics) {
+                createTopicFilters(stats.topics);
+            }
+            
+            displayEmails('all');
+            displayAIInsights(stats);
+            initCharts(stats);
+            
+            // Add topic overview to dashboard
+            setTimeout(() => {
+                addTopicOverviewToDashboard();
+            }, 100);
+            
+            // Check connection
+            const healthResponse = await fetch(`${API_BASE_URL}/health`);
+            const health = await healthResponse.json();
+            
+            if (health.openai !== 'configured') {
+                document.getElementById('connectionStatus').textContent = 'Connected (No AI)';
+            }
+        } catch (error) {
+            console.error('Error loading data:', error);
+            document.getElementById('connectionStatus').textContent = 'Offline';
+        }
+    }
+
+    function updateCounts(stats, actionData) {
+        document.getElementById('inboxCount').textContent = stats.total || 0;
+        document.getElementById('totalStat').textContent = stats.total || 0;
+        document.getElementById('avgPriorityStat').textContent = (stats.avgPriorityScore || 0).toFixed(1);
+        document.getElementById('requireActionStat').textContent = stats.emailsRequiringAction || 0;
+        document.getElementById('analyzedStat').textContent = stats.analyzed || 0;
+        
+        // Count high priority emails
+        const highPriorityCount = emailData.emails.filter(e => 
+            e.analysis && e.analysis.priority_score >= 6
+        ).length;
+        document.getElementById('priorityCount').textContent = highPriorityCount;
+        
+        // Count action items
+        document.getElementById('actionCount').textContent = actionData?.actionItems?.length || 0;
+    }
+
+    function createEmailListItem(email, originalIndex) {
+        const emailDiv = document.createElement('div');
+        emailDiv.className = 'email-item';
+        emailDiv.setAttribute('data-email-index', originalIndex);
+        emailDiv.onclick = () => selectEmail(email);
+        
+        // Extract sender name
+        const senderName = extractNameFromEmail(email.sender);
+        
+        // Format date
+        const formattedDate = email.date ? formatDate(email.date) : '2 days ago';
+        
+        // Get analysis data
+        const analysis = email.analysis || {};
+        
+        // Priority level and score
+        const priorityScore = analysis.priority_score || 0;
+        let priorityLevel = 'low';
+        if (priorityScore >= 7) priorityLevel = 'high';
+        else if (priorityScore >= 5) priorityLevel = 'medium';
+        
+        // Build tag badges HTML
+        let tagBadges = '';
+        
+        // 1. Sentiment Category Badge (enhanced)
+        if (analysis.sentiment_category) {
+            tagBadges += `<span class="sentiment-badge sentiment-${analysis.sentiment_category}">${analysis.sentiment_category}</span>`;
+        } else if (analysis.sentiment?.ai_analysis?.overall_sentiment) {
+            // Fallback to old structure
+            const sentiment = analysis.sentiment.ai_analysis.overall_sentiment;
+            tagBadges += `<span class="sentiment-badge sentiment-${sentiment}">${sentiment}</span>`;
+        }
+        
+        // 2. Emotional Temperature Badge
+        if (analysis.emotional_temperature) {
+            const tempColors = {
+                'hot': 'angry',
+                'warm': 'complimentary',
+                'cool': 'neutral',
+                'cold': 'political'
+            };
+            tagBadges += `<span class="sentiment-badge sentiment-${tempColors[analysis.emotional_temperature] || 'neutral'}">${analysis.emotional_temperature}</span>`;
+        }
+        
+        // 3. Priority/Urgency Badge
+        if (analysis.priority_level) {
+            tagBadges += `<span class="sentiment-badge sentiment-${priorityLevel === 'high' ? 'angry' : priorityLevel === 'medium' ? 'complaining' : 'neutral'}">${analysis.priority_level} priority</span>`;
+        }
+        
+        // 4. Response Required Badge
+        if (analysis.response_required && analysis.response_required !== 'no') {
+            const responseColors = {
+                'yes-direct': 'angry',
+                'yes-complaint': 'complaining',
+                'yes-request': 'political',
+                'maybe': 'neutral'
+            };
+            const responseLabels = {
+                'yes-direct': 'needs response',
+                'yes-complaint': 'complaint response',
+                'yes-request': 'request response',
+                'maybe': 'may need response'
+            };
+            tagBadges += `<span class="sentiment-badge sentiment-${responseColors[analysis.response_required] || 'neutral'}">${responseLabels[analysis.response_required] || analysis.response_required}</span>`;
+        }
+        
+        // 5. Topic Category Badge
+        if (analysis.topic_category) {
+            tagBadges += `<span class="sentiment-badge sentiment-political" style="cursor: pointer;" onclick="event.stopPropagation(); filterByTopic('${analysis.topic_category}')">${analysis.topic_category}</span>`;
+        }
+        
+        // 6. Specific Topics Badges
+        if (analysis.specific_topics && analysis.specific_topics.length > 0) {
+            analysis.specific_topics.slice(0, 2).forEach(topic => {
+                tagBadges += `<span class="sentiment-badge sentiment-political" style="cursor: pointer;" onclick="event.stopPropagation(); filterByTopic('${topic}')">${topic}</span>`;
+            });
+        }
+        
+        // 7. Intent Badge
+        if (analysis.primary_intent && analysis.primary_intent !== 'inform') {
+            tagBadges += `<span class="sentiment-badge sentiment-neutral">intent: ${analysis.primary_intent}</span>`;
+        }
+        
+        // 8. Sender Category Badge
+        if (analysis.sender_category && analysis.sender_category !== 'new') {
+            const senderColors = {
+                'active': 'complimentary',
+                'regular': 'neutral',
+                'lapsed': 'complaining',
+                'vip': 'happy'
+            };
+            tagBadges += `<span class="sentiment-badge sentiment-${senderColors[analysis.sender_category] || 'neutral'}">${analysis.sender_category} sender</span>`;
+        }
+        
+        // 9. Risk Indicators Badge
+        if (analysis.risk_indicators && analysis.risk_indicators.length > 0) {
+            tagBadges += `<span class="sentiment-badge sentiment-angry">⚠️ risk</span>`;
+        }
+        
+        // 10. Opportunities Badge
+        if (analysis.opportunities && analysis.opportunities.length > 0) {
+            tagBadges += `<span class="sentiment-badge sentiment-happy">💡 opportunity</span>`;
+        }
+        
+        // Use enhanced summary or fallback
+        const preview = analysis.summary || 
+                       (email.clean_text ? email.clean_text.substring(0, 100) + '...' : 
+                       'Click to view email content');
+        
+        // Priority indicator color based on score
+        const priorityColor = priorityScore >= 7 ? '#d13438' : priorityScore >= 5 ? '#ffb900' : '#10c510';
+        
+        emailDiv.innerHTML = `
+            <div style="position: absolute; left: 0; top: 0; bottom: 0; width: 4px; background-color: ${priorityColor};"></div>
+            <div class="email-header-row">
+                <div class="email-from">${senderName}</div>
+                <div style="display: flex; align-items: center;">
+                    <div class="email-time">${formattedDate}</div>
+                    <span class="priority-score ${priorityLevel}">${priorityScore.toFixed(1)}</span>
+                </div>
+            </div>
+            <div class="email-subject">${email.subject}</div>
+            <div class="email-preview">${preview}</div>
+            <div style="display: flex; flex-wrap: wrap; gap: 4px; margin-top: 8px;">
+                ${tagBadges}
+            </div>
+        `;
+        
+        return emailDiv;
+    }
+
+    // Multi-select filter functions
+    function filterBySentiment(sentiment, element) {
+        toggleFilter('sentiment', sentiment, element);
+        applyFilters();
+    }
+
+    function filterEmails(filter, element) {
+        // Handle "All" filter specially
+        if (filter === 'all') {
+            clearAllFilters();
+            element.classList.add('active');
+            displayEmails('all');
+            return;
+        }
+        
+        // Determine filter type and value
+        if (filter === 'critical' || filter === 'high' || filter === 'medium' || filter === 'low') {
+            toggleFilter('priority', filter, element);
+        } else if (filter.startsWith('response:')) {
+            toggleFilter('response', filter, element);
+        } else if (filter.startsWith('topic-category:')) {
+            toggleFilter('category', filter, element);
+        }
+        
+        applyFilters();
+    }
+
+    function filterByTopic(topic, element) {
+        toggleFilter('topics', 'topic:' + topic, element);
+        applyFilters();
+    }
+
+    function toggleFilter(filterType, filterValue, element) {
+        // Remove active state from "All" filter
+        const allFilter = document.querySelector('.filter-chip[onclick*="all"]');
+        if (allFilter) allFilter.classList.remove('active');
+        
+        const filterArray = activeFilters[filterType];
+        const index = filterArray.indexOf(filterValue);
+        
+        if (index > -1) {
+            // Remove filter
+            filterArray.splice(index, 1);
+            if (element) element.classList.remove('active');
+        } else {
+            // Add filter
+            filterArray.push(filterValue);
+            if (element) element.classList.add('active');
+        }
+        
+        // If no filters are active, activate "All"
+        const hasActiveFilters = Object.values(activeFilters).some(arr => arr.length > 0);
+        if (!hasActiveFilters && allFilter) {
+            allFilter.classList.add('active');
+        }
+    }
+
+    function applyFilters() {
+        const emailList = document.getElementById('emailList');
+        emailList.innerHTML = '';
+        
+        // Check if any filters are active
+        const hasActiveFilters = Object.values(activeFilters).some(arr => arr.length > 0);
+        
+        if (!hasActiveFilters) {
+            displayEmails('all');
+            return;
+        }
+        
+        // Filter emails based on all active filters
+        let filtered = emailData.emails.filter(email => {
+            // Check sentiment filters
+            if (activeFilters.sentiment.length > 0) {
+                const matchesSentiment = activeFilters.sentiment.some(sentiment => {
+                    if (email.analysis?.sentiment_category === sentiment) return true;
+                    if (email.analysis?.sentiment?.ai_analysis?.overall_sentiment === sentiment) return true;
+                    if (email.analysis?.sentiment?.classification === sentiment) return true;
+                    return false;
+                });
+                if (!matchesSentiment) return false;
+            }
+            
+            // Check priority filters
+            if (activeFilters.priority.length > 0) {
+                const priorityScore = email.analysis?.priority_score || 0;
+                const matchesPriority = activeFilters.priority.some(priority => {
+                    switch(priority) {
+                        case 'critical': return priorityScore >= 9;
+                        case 'high': return priorityScore >= 7 && priorityScore < 9;
+                        case 'medium': return priorityScore >= 5 && priorityScore < 7;
+                        case 'low': return priorityScore >= 1 && priorityScore < 5;
+                        default: return false;
+                    }
+                });
+                if (!matchesPriority) return false;
+            }
+            
+            // Check response filters
+            if (activeFilters.response.length > 0) {
+                const matchesResponse = activeFilters.response.some(response => {
+                    const responseType = response.substring(9); // Remove 'response:' prefix
+                    return email.analysis?.response_required === responseType;
+                });
+                if (!matchesResponse) return false;
+            }
+            
+            // Check category filters
+            if (activeFilters.category.length > 0) {
+                const matchesCategory = activeFilters.category.some(category => {
+                    const categoryName = category.substring(15); // Remove 'topic-category:' prefix
+                    return email.analysis?.topic_category === categoryName;
+                });
+                if (!matchesCategory) return false;
+            }
+            
+            // Check topic filters
+            if (activeFilters.topics.length > 0) {
+                const matchesTopic = activeFilters.topics.some(topicFilter => {
+                    const topic = topicFilter.substring(6).toLowerCase(); // Remove 'topic:' prefix
+                    
+                    // Check in specific_topics
+                    if (email.analysis?.specific_topics) {
+                        const hasTopicInSpecific = email.analysis.specific_topics.some(t => 
+                            t.toLowerCase().includes(topic) || topic.includes(t.toLowerCase())
+                        );
+                        if (hasTopicInSpecific) return true;
+                    }
+                    
+                    // Check in topic_category
+                    if (email.analysis?.topic_category && email.analysis.topic_category.toLowerCase().includes(topic)) {
+                        return true;
+                    }
+                    
+                    // Search in subject and body
+                    if (email.subject && email.subject.toLowerCase().includes(topic)) {
+                        return true;
+                    }
+                    
+                    const emailContent = (email.clean_text || email.body || '').toLowerCase();
+                    if (emailContent.includes(topic)) {
+                        return true;
+                    }
+                    
+                    return false;
+                });
+                if (!matchesTopic) return false;
+            }
+            
+            return true;
+        });
+        
+        // Sort by priority score (highest first)
+        filtered.sort((a, b) => {
+            const scoreA = a.analysis?.priority_score || 0;
+            const scoreB = b.analysis?.priority_score || 0;
+            return scoreB - scoreA;
+        });
+        
+        // Display filtered results
+        if (filtered.length === 0) {
+            emailList.innerHTML = `
+                <div style="padding: 40px; text-align: center; color: #605e5c;">
+                    <i class="fas fa-search" style="font-size: 48px; opacity: 0.3; margin-bottom: 16px;"></i>
+                    <p style="font-size: 16px;">No emails match the selected filters</p>
+                    <p style="font-size: 14px; margin-top: 8px;">Try removing some filters to see more results</p>
+                    <button class="filter-chip" onclick="clearAllFilters()" style="margin-top: 16px;">
+                        Clear All Filters
+                    </button>
+                </div>
+            `;
+            return;
+        }
+        
+        // Display active filter summary
+        const activeFilterCount = Object.values(activeFilters).reduce((sum, arr) => sum + arr.length, 0);
+        const filterSummary = document.createElement('div');
+        filterSummary.style.cssText = 'padding: 12px 16px; background: #f3f2f1; font-size: 13px; color: #605e5c;';
+        filterSummary.innerHTML = `
+            Showing ${filtered.length} email${filtered.length !== 1 ? 's' : ''} matching ${activeFilterCount} filter${activeFilterCount !== 1 ? 's' : ''}
+            <button onclick="clearAllFilters()" style="margin-left: 8px; padding: 2px 8px; border: 1px solid #edebe9; border-radius: 12px; background: white; font-size: 11px; cursor: pointer;">Clear</button>
+        `;
+        emailList.appendChild(filterSummary);
+        
+        // Display emails
+        filtered.forEach((email, index) => {
+            const emailDiv = createEmailListItem(email, emailData.emails.indexOf(email));
+            emailList.appendChild(emailDiv);
+        });
+    }
+
+    function clearAllFilters() {
+        activeFilters = {
+            sentiment: [],
+            priority: [],
+            response: [],
+            category: [],
+            topics: []
+        };
+        
+        document.querySelectorAll('.filter-chip').forEach(chip => {
+            chip.classList.remove('active');
+        });
+        
+        const allFilter = document.querySelector('.filter-chip[onclick*="all"]');
+        if (allFilter) allFilter.classList.add('active');
+        
+        displayEmails('all');
+    }
+
+    function displayEmails(filter) {
+        if (filter === 'all') {
+            const emailList = document.getElementById('emailList');
+            emailList.innerHTML = '';
+            
+            // Sort by priority score (highest first)
+            const sorted = [...emailData.emails].sort((a, b) => {
+                const scoreA = a.analysis?.priority_score || 0;
+                const scoreB = b.analysis?.priority_score || 0;
+                return scoreB - scoreA;
+            });
+            
+            sorted.forEach((email, index) => {
+                const emailDiv = createEmailListItem(email, emailData.emails.indexOf(email));
+                emailList.appendChild(emailDiv);
+            });
+        }
+    }
+
+    function selectEmail(email) {
+        selectedEmail = email;
+        
+        // Update selection state
+        document.querySelectorAll('.email-item').forEach(item => {
+            item.classList.remove('selected');
+        });
+        event.currentTarget.classList.add('selected');
+        
+        // Show email detail
+        document.getElementById('emptyDetail').style.display = 'none';
+        document.getElementById('emailDetail').style.display = 'block';
+        
+        displayEmailDetail(email);
+    }
+
+    function displayEmailDetail(email) {
+        const senderName = extractNameFromEmail(email.sender);
+        const formattedDate = email.date ? 
+            new Date(email.date).toLocaleDateString('en-US', { 
+                weekday: 'long', 
+                year: 'numeric', 
+                month: 'long', 
+                day: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit'
+                }) : 
+            new Date().toLocaleDateString();
+        
+        // Get analysis data
+        const analysis = email.analysis || {};
+        const priorityScore = analysis.priority_score || 0;
+        let priorityLevel = 'low';
+        if (priorityScore >= 6) priorityLevel = 'high';
+        else if (priorityScore >= 3) priorityLevel = 'medium';
+        
+        // Create badges
+        let badges = '';
+        if (analysis.sentiment?.ai_analysis) {
+            const sentiment = analysis.sentiment.ai_analysis.overall_sentiment;
+            badges += `<span class="sentiment-badge sentiment-${sentiment}">${sentiment}</span>`;
+        }
+        if (analysis.urgency?.level) {
+            badges += `<span class="sentiment-badge sentiment-${analysis.urgency.level === 'critical' ? 'angry' : 'political'}">${analysis.urgency.level}</span>`;
+        }
+        badges += `<span class="priority-score ${priorityLevel}">Priority: ${priorityScore.toFixed(1)}</span>`;
+        
+        // Action items
+        let actionItemsHtml = '';
+        if (analysis.action_required?.items?.length > 0) {
+            actionItemsHtml = `
+                <div style="margin-top: 24px; padding: 16px; background: #faf9f8; border-radius: 8px;">
+                    <h4 style="margin-bottom: 12px; color: #323130;">
+                        <i class="fas fa-tasks"></i> Action Items
+                    </h4>
+                    ${analysis.action_required.items.map(item => `
+                        <div style="padding: 8px 0; border-bottom: 1px solid #edebe9;">
+                            <div style="font-weight: 500; margin-bottom: 4px;">${item.action}</div>
+                            <div style="font-size: 12px; color: #605e5c;">
+                                <span class="priority-indicator priority-${item.priority}"></span>
+                                ${item.priority} priority
+                                ${item.deadline ? ` • Due: ${item.deadline}` : ''}
+                            </div>
+                        </div>
+                    `).join('')}
+                </div>
+            `;
+        }
+        
+        // AI Insights
+        let aiInsightsHtml = '';
+        if (analysis.ai_insights) {
+            const insights = analysis.ai_insights;
+            aiInsightsHtml = `
+                <div style="margin-top: 24px; padding: 16px; background: #f3e5f5; border-radius: 8px;">
+                    <h4 style="margin-bottom: 12px; color: #5c2d91;">
+                        <i class="fas fa-brain"></i> AI Analysis
+                    </h4>
+                    <p style="margin-bottom: 12px;">${insights.executive_summary}</p>
+                    ${insights.suggested_response ? `
+                        <div style="margin-top: 12px; padding: 12px; background: white; border-radius: 4px;">
+                            <strong>Suggested Response:</strong><br>
+                            ${insights.suggested_response}
+                        </div>
+                    ` : ''}
+                </div>
+            `;
+        }
+        
+        // Sender insights
+        let senderInsightsHtml = '';
+        if (emailData.summary?.sender_analysis?.[email.sender]) {
+            const senderData = emailData.summary.sender_analysis[email.sender];
+            senderInsightsHtml = `
+                <div class="sender-insights">
+                    <h4 style="margin-bottom: 12px;">
+                        <i class="fas fa-user"></i> Sender Insights
+                    </h4>
+                    <div class="sender-stat">
+                        <span class="sender-stat-label">Total emails from sender:</span>
+                        <span class="sender-stat-value">${senderData.count}</span>
+                    </div>
+                    <div class="sender-stat">
+                        <span class="sender-stat-label">Average priority:</span>
+                        <span class="sender-stat-value">${senderData.avg_priority.toFixed(1)}</span>
+                    </div>
+                    <div class="sender-stat">
+                        <span class="sender-stat-label">Top topics:</span>
+                        <span class="sender-stat-value">${senderData.top_topics.join(', ')}</span>
+                    </div>
+                </div>
+            `;
+        }
+        
+        // Format body content with proper handling of line breaks
+        let bodyContent = '';
+        
+        // Helper function to properly convert escaped newlines to HTML
+        function processTextContent(text) {
+            if (!text) return '';
+            
+            // First, replace literal backslash-r-backslash-n sequences
+            let processed = text
+                .replace(/\\r\\n/g, '\n')  // Convert \r\n to newline
+                .replace(/\\n/g, '\n')      // Convert \n to newline
+                .replace(/\\r/g, '\n')      // Convert \r to newline
+                .replace(/\\t/g, '    ');   // Convert tabs to spaces
+            
+            // Handle multiple consecutive newlines (preserve paragraph breaks)
+            processed = processed
+                .split('\n')
+                .map(line => line.trim())
+                .join('\n');
+            
+            // Convert single newlines to <br> and double newlines to paragraph breaks
+            processed = processed
+                .replace(/\n\n+/g, '</p><p style="margin: 16px 0;">')  // Paragraph breaks
+                .replace(/\n/g, '<br>');                                // Line breaks
+            
+            // Wrap in paragraph tags
+            processed = `<p style="margin: 0;">${processed}</p>`;
+            
+            // Clean up empty paragraphs
+            processed = processed.replace(/<p[^>]*>\s*<\/p>/g, '');
+            
+            return processed;
+        }
+        
+        if (email.body) {
+            // Check if this is plain text or HTML
+            const hasHtmlTags = /<[a-zA-Z][^>]*>/.test(email.body);
+            
+            if (!hasHtmlTags || email.body.includes('\\r\\n') || email.body.includes('\\n')) {
+                // This is plain text or has escaped newlines - process it
+                const processedBody = processTextContent(email.body);
+                
+                bodyContent = `
+                    <div style="font-size: 14px; line-height: 1.8; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; color: #323130; word-wrap: break-word;">
+                        ${processedBody}
+                    </div>
+                `;
+            } else {
+                // This is HTML content - use iframe
+                bodyContent = `
+                    <iframe 
+                        id="emailFrame" 
+                        style="width: 100%; border: none; min-height: 600px;" 
+                        sandbox="allow-same-origin"
+                    ></iframe>
+                `;
+            }
+        } else if (email.clean_text) {
+            // Process clean_text with proper line break handling
+            const processedContent = processTextContent(email.clean_text);
+            
+            bodyContent = `
+                <div style="font-size: 14px; line-height: 1.8; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; color: #323130; word-wrap: break-word;">
+                    ${processedContent}
+                </div>
+            `;
+        } else {
+            bodyContent = '<div style="color: #605e5c; font-style: italic;">Unable to display email content</div>';
+        }
+        
+        document.getElementById('emailContent').innerHTML = `
+            <div style="margin-bottom: 24px;">
+                <h2 style="margin-bottom: 8px;">${email.subject}</h2>
+                <div style="display: flex; flex-direction: column; gap: 8px; color: #605e5c; font-size: 14px;">
+                    <div><strong>From:</strong> ${senderName} &lt;${email.sender}&gt;</div>
+                    <div><strong>Date:</strong> ${formattedDate}</div>
+                </div>
+                <div style="margin-top: 8px;">${badges}</div>
+            </div>
+            ${aiInsightsHtml}
+            ${actionItemsHtml}
+            ${senderInsightsHtml}
+            <div style="margin-top: 24px;">
+                <h4 style="margin-bottom: 12px;">Email Content</h4>
+                ${bodyContent}
+            </div>
+        `;
+        
+        // If using iframe for HTML emails, write the content
+        if (email.body && bodyContent.includes('iframe')) {
+            setTimeout(() => {
+                const iframe = document.getElementById('emailFrame');
+                if (!iframe) return;
+                
+                const iframeDoc = iframe.contentDocument || iframe.contentWindow.document;
+                
+                // Write the HTML content
+                iframeDoc.open();
+                iframeDoc.write(email.body);
+                iframeDoc.close();
+                
+                // Adjust iframe height
+                const adjustHeight = () => {
+                    try {
+                        const height = Math.max(
+                            iframeDoc.body.scrollHeight,
+                            iframeDoc.documentElement.scrollHeight,
+                            600
+                        );
+                        iframe.style.height = height + 'px';
+                    } catch (e) {
+                        iframe.style.height = '600px';
+                    }
+                };
+                
+                iframe.onload = adjustHeight;
+                setTimeout(adjustHeight, 200);
+            }, 0);
+        }
+    }
+
+    function filterByUrgency(urgency, element) {
+        currentFilter = urgency;
+        
+        // Update active state
+        document.querySelectorAll('.filter-chip').forEach(chip => {
+            chip.classList.remove('active');
+        });
+        element.classList.add('active');
+        
+        displayEmails(urgency);
+    }
+
+    function filterByTopicFromBadge(topic) {
+        // Find and click the corresponding topic filter chip
+        const topicChips = document.querySelectorAll('.filter-chip');
+        let found = false;
+        
+        topicChips.forEach(chip => {
+            if (chip.textContent.toLowerCase().includes(topic.toLowerCase())) {
+                chip.click();
+                found = true;
+            }
+        });
+        
+        // If not found in current filter chips, create a temporary filter
+        if (!found) {
+            currentFilter = 'topic:' + topic;
+            displayEmails(currentFilter);
+            
+            // Update filter bar to show current topic
+            document.querySelectorAll('.filter-chip').forEach(chip => {
+                chip.classList.remove('active');
+            });
+        }
+    }
+
+    function createTopicFilters(topics) {
+        // Get top topics (e.g., top 10 by frequency)
+        topTopicsList = Object.entries(topics)
+            .sort((a, b) => b[1] - a[1])
+            .slice(0, 10)
+            .map(([topic, count]) => ({ topic, count }));
+        
+        console.log('Top topics:', topTopicsList);
+        
+        // Find the dynamic topic filters container
+        const dynamicContainer = document.getElementById('dynamicTopicFilters');
+        
+        if (topTopicsList.length > 0) {
+            // Clear existing content
+            dynamicContainer.innerHTML = '';
+            
+            // Add topic label
+            const topicLabel = document.createElement('span');
+            topicLabel.className = 'filter-category-label';
+            topicLabel.textContent = 'TOPICS:';
+            dynamicContainer.appendChild(topicLabel);
+            
+            // Add topic chips
+            topTopicsList.forEach(({ topic, count }) => {
+                const chip = document.createElement('div');
+                chip.className = 'filter-chip topic-filter-chip';
+                chip.innerHTML = `${topic} <span style="opacity: 0.6; font-size: 10px;">(${count})</span>`;
+                chip.onclick = function() { filterByTopic(topic, this); };
+                dynamicContainer.appendChild(chip);
+            });
+        }
+    }
+
+    function searchEmails() {
+        const query = document.getElementById('searchBox').value.toLowerCase();
+        
+        // First apply active filters
+        const hasActiveFilters = Object.values(activeFilters).some(arr => arr.length > 0);
+        let baseEmails = emailData.emails;
+        
+        if (hasActiveFilters) {
+            // Apply the same filter logic as in applyFilters
+            baseEmails = emailData.emails.filter(email => {
+                // Check sentiment filters
+                if (activeFilters.sentiment.length > 0) {
+                    const matchesSentiment = activeFilters.sentiment.some(sentiment => {
+                        if (email.analysis?.sentiment_category === sentiment) return true;
+                        if (email.analysis?.sentiment?.ai_analysis?.overall_sentiment === sentiment) return true;
+                        if (email.analysis?.sentiment?.classification === sentiment) return true;
+                        return false;
+                    });
+                    if (!matchesSentiment) return false;
+                }
+                
+                // Check priority filters
+                if (activeFilters.priority.length > 0) {
+                    const priorityScore = email.analysis?.priority_score || 0;
+                    const matchesPriority = activeFilters.priority.some(priority => {
+                        switch(priority) {
+                            case 'critical': return priorityScore >= 9;
+                            case 'high': return priorityScore >= 7 && priorityScore < 9;
+                            case 'medium': return priorityScore >= 5 && priorityScore < 7;
+                            case 'low': return priorityScore >= 1 && priorityScore < 5;
+                            default: return false;
+                        }
+                    });
+                    if (!matchesPriority) return false;
+                }
+                
+                // Check response filters
+                if (activeFilters.response.length > 0) {
+                    const matchesResponse = activeFilters.response.some(response => {
+                        const responseType = response.substring(9);
+                        return email.analysis?.response_required === responseType;
+                    });
+                    if (!matchesResponse) return false;
+                }
+                
+                // Check category filters
+                if (activeFilters.category.length > 0) {
+                    const matchesCategory = activeFilters.category.some(category => {
+                        const categoryName = category.substring(15);
+                        return email.analysis?.topic_category === categoryName;
+                    });
+                    if (!matchesCategory) return false;
+                }
+                
+                // Check topic filters
+                if (activeFilters.topics.length > 0) {
+                    const matchesTopic = activeFilters.topics.some(topicFilter => {
+                        const topic = topicFilter.substring(6).toLowerCase();
+                        
+                        if (email.analysis?.specific_topics) {
+                            const hasTopicInSpecific = email.analysis.specific_topics.some(t => 
+                                t.toLowerCase().includes(topic) || topic.includes(t.toLowerCase())
+                            );
+                            if (hasTopicInSpecific) return true;
+                        }
+                        
+                        if (email.analysis?.topic_category && email.analysis.topic_category.toLowerCase().includes(topic)) {
+                            return true;
+                        }
+                        
+                        if (email.subject && email.subject.toLowerCase().includes(topic)) {
+                            return true;
+                        }
+                        
+                        const emailContent = (email.clean_text || email.body || '').toLowerCase();
+                        if (emailContent.includes(topic)) {
+                            return true;
+                        }
+                        
+                        return false;
+                    });
+                    if (!matchesTopic) return false;
+                }
+                
+                return true;
+            });
+        }
+        
+        // Then apply search
+        const filtered = baseEmails.filter(email => {
+            const senderName = extractNameFromEmail(email.sender).toLowerCase();
+            const summary = email.analysis?.summary?.toLowerCase() || '';
+            const cleanText = email.clean_text?.toLowerCase() || '';
+            const topics = email.analysis?.topics?.map(t => t.toLowerCase()).join(' ') || '';
+            
+            return senderName.includes(query) ||
+                   email.sender.toLowerCase().includes(query) ||
+                   email.subject.toLowerCase().includes(query) ||
+                   summary.includes(query) ||
+                   cleanText.includes(query) ||
+                   topics.includes(query);
+        });
+        
+        const emailList = document.getElementById('emailList');
+        emailList.innerHTML = '';
+        
+        if (filtered.length === 0) {
+            emailList.innerHTML = `
+                <div style="padding: 40px; text-align: center; color: #605e5c;">
+                    <i class="fas fa-search" style="font-size: 48px; opacity: 0.3; margin-bottom: 16px;"></i>
+                    <p style="font-size: 16px;">No emails found matching "${query}"</p>
+                </div>
+            `;
+            return;
+        }
+        
+        filtered.forEach((email, index) => {
+            const emailDiv = createEmailListItem(email, emailData.emails.indexOf(email));
+            emailList.appendChild(emailDiv);
+        });
+    }
+
+    function showView(view) {
+        // Hide all views
+        document.querySelectorAll('.view').forEach(v => v.style.display = 'none');
+        
+        // Update nav
+        document.querySelectorAll('.nav-item').forEach(item => {
+            item.classList.remove('active');
+        });
+        event.currentTarget.classList.add('active');
+        
+        // Show selected view
+        currentView = view;
+        if (view === 'emails') {
+            document.getElementById('emailView').style.display = 'flex';
+        } else if (view === 'priority') {
+            document.getElementById('priorityView').style.display = 'block';
+            displayPriorityEmails();
+        } else if (view === 'actions') {
+            document.getElementById('actionsView').style.display = 'block';
+            displayActionItems();
+        } else if (view === 'dashboard') {
+            document.getElementById('dashboardView').style.display = 'block';
+        } else if (view === 'insights') {
+            document.getElementById('insightsView').style.display = 'block';
+        }
+    }
+
+    function displayPriorityEmails() {
+        const container = document.getElementById('priorityEmailsList');
+        container.innerHTML = '';
+        
+        // Group emails by priority
+        const highPriority = emailData.emails.filter(e => e.analysis?.priority_score >= 6);
+        const mediumPriority = emailData.emails.filter(e => 
+            e.analysis?.priority_score >= 3 && e.analysis?.priority_score < 6
+        );
+        const lowPriority = emailData.emails.filter(e => 
+            e.analysis?.priority_score < 3 && e.analysis?.priority_score > 0
+        );
+        
+        // Create sections
+        if (highPriority.length > 0) {
+            container.innerHTML += `
+                <div style="margin-bottom: 32px;">
+                    <h3 style="color: #d13438; margin-bottom: 16px;">
+                        <span class="priority-indicator priority-high"></span>
+                        High Priority (${highPriority.length})
+                    </h3>
+                    <div class="priority-emails-group">
+                        ${highPriority.map(email => createPriorityEmailCard(email)).join('')}
+                    </div>
+                </div>
+            `;
+        }
+        
+        if (mediumPriority.length > 0) {
+            container.innerHTML += `
+                <div style="margin-bottom: 32px;">
+                    <h3 style="color: #ffb900; margin-bottom: 16px;">
+                        <span class="priority-indicator priority-medium"></span>
+                        Medium Priority (${mediumPriority.length})
+                    </h3>
+                    <div class="priority-emails-group">
+                        ${mediumPriority.map(email => createPriorityEmailCard(email)).join('')}
+                    </div>
+                </div>
+            `;
+        }
+        
+        if (lowPriority.length > 0) {
+            container.innerHTML += `
+                <div style="margin-bottom: 32px;">
+                    <h3 style="color: #10c510; margin-bottom: 16px;">
+                        <span class="priority-indicator priority-low"></span>
+                        Low Priority (${lowPriority.length})
+                    </h3>
+                    <div class="priority-emails-group">
+                        ${lowPriority.map(email => createPriorityEmailCard(email)).join('')}
+                    </div>
+                </div>
+            `;
+        }
+    }
+
+    function createPriorityEmailCard(email) {
+        const senderName = extractNameFromEmail(email.sender);
+        const analysis = email.analysis || {};
+        const priorityScore = analysis.priority_score || 0;
+        
+        return `
+            <div style="background: white; border-radius: 8px; padding: 20px; margin-bottom: 16px; cursor: pointer; transition: all 0.2s; box-shadow: 0 2px 4px rgba(0,0,0,0.05);"
+                 onclick="selectEmailFromPriority(${emailData.emails.indexOf(email)})"
+                 onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 4px 8px rgba(0,0,0,0.1)'"
+                 onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 2px 4px rgba(0,0,0,0.05)'">
+                <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 12px;">
+                    <div>
+                        <h4 style="margin: 0 0 4px 0;">${email.subject}</h4>
+                        <div style="color: #605e5c; font-size: 14px;">From: ${senderName}</div>
+                    </div>
+                    <div style="font-size: 24px; font-weight: 600; color: ${priorityScore >= 6 ? '#d13438' : priorityScore >= 3 ? '#ffb900' : '#10c510'};">
+                        ${priorityScore.toFixed(1)}
+                    </div>
+                </div>
+                <p style="margin: 12px 0; font-size: 14px; color: #605e5c; line-height: 1.5;">
+                    ${analysis.summary || 'No summary available'}
+                </p>
+                ${analysis.action_required?.items?.length > 0 ? `
+                    <div style="margin-top: 12px; padding-top: 12px; border-top: 1px solid #edebe9;">
+                        <strong style="font-size: 13px;">Actions Required:</strong>
+                        <ul style="margin: 8px 0 0 20px; font-size: 13px; color: #605e5c;">
+                            ${analysis.action_required.items.slice(0, 2).map(item => 
+                                `<li>${item.action}</li>`
+                            ).join('')}
+                            ${analysis.action_required.items.length > 2 ? 
+                                `<li>...and ${analysis.action_required.items.length - 2} more</li>` : ''
+                            }
+                        </ul>
+                    </div>
+                ` : ''}
+            </div>
+        `;
+    }
+
+    function selectEmailFromPriority(emailIndex) {
+        showView('emails');
+        setTimeout(() => {
+            const email = emailData.emails[emailIndex];
+            selectEmail(email);
+            
+            // Scroll to email in list
+            const emailItems = document.querySelectorAll('.email-item');
+            emailItems.forEach(item => {
+                if (parseInt(item.getAttribute('data-email-index')) === emailIndex) {
+                    item.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                }
+            });
+        }, 100);
+    }
+
+    function filterPriority(level, element) {
+        // Update active state
+        document.querySelectorAll('.filter-chip').forEach(chip => {
+            chip.classList.remove('active');
+        });
+        element.classList.add('active');
+        
+        if (level === 'all') {
+            displayPriorityEmails();
+        } else {
+            const container = document.getElementById('priorityEmailsList');
+            container.innerHTML = '';
+            
+            let filtered = [];
+            if (level === 'high') {
+                filtered = emailData.emails.filter(e => e.analysis?.priority_score >= 6);
+            } else if (level === 'medium') {
+                filtered = emailData.emails.filter(e => 
+                    e.analysis?.priority_score >= 3 && e.analysis?.priority_score < 6
+                );
+            } else if (level === 'low') {
+                filtered = emailData.emails.filter(e => 
+                    e.analysis?.priority_score < 3 && e.analysis?.priority_score > 0
+                );
+            }
+            
+            container.innerHTML = `
+                <div class="priority-emails-group">
+                    ${filtered.map(email => createPriorityEmailCard(email)).join('')}
+                </div>
+            `;
+        }
+    }
+
+    async function displayActionItems() {
+        try {
+            const response = await fetch(`${API_BASE_URL}/action-items`);
+            const data = await response.json();
+            
+            const container = document.getElementById('actionItemsList');
+            container.innerHTML = '';
+            
+            // Display summary
+            if (emailData.summary?.ai_insights?.action_items) {
+                const summaryDiv = document.getElementById('actionSummary');
+                summaryDiv.innerHTML = `
+                    <p style="margin-bottom: 16px;">${emailData.summary.ai_insights.executive_summary}</p>
+                    <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-top: 16px;">
+                        <div style="text-align: center;">
+                            <div style="font-size: 24px; font-weight: 600; color: #d13438;">
+                                ${data.actionItems.filter(a => a.priority === 'high').length}
+                            </div>
+                            <div style="font-size: 12px; color: #605e5c;">High Priority</div>
+                        </div>
+                        <div style="text-align: center;">
+                            <div style="font-size: 24px; font-weight: 600; color: #ffb900;">
+                                ${data.actionItems.filter(a => a.priority === 'medium').length}
+                            </div>
+                            <div style="font-size: 12px; color: #605e5c;">Medium Priority</div>
+                        </div>
+                        <div style="text-align: center;">
+                            <div style="font-size: 24px; font-weight: 600; color: #10c510;">
+                                ${data.actionItems.filter(a => a.priority === 'low').length}
+                            </div>
+                            <div style="font-size: 12px; color: #605e5c;">Low Priority</div>
+                        </div>
+                    </div>
+                `;
+            }
+            
+            // Display action items
+            data.actionItems.forEach((item, index) => {
+                const actionDiv = document.createElement('div');
+                actionDiv.className = 'action-item';
+                
+                actionDiv.innerHTML = `
+                    <input type="checkbox" class="action-checkbox" id="action-${index}">
+                    <div class="action-content">
+                        <label for="action-${index}" class="action-text">${item.action}</label>
+                        <div class="action-meta">
+                            <span class="priority-indicator priority-${item.priority}"></span>
+                            <span>${item.priority} priority</span>
+                            <span style="margin: 0 8px;">•</span>
+                            <span>From: "${item.emailSubject}"</span>
+                            ${item.deadline ? `
+                                <span class="action-deadline">
+                                    <i class="fas fa-calendar"></i>
+                                    ${item.deadline}
+                                </span>
+                            ` : ''}
+                        </div>
+                    </div>
+                `;
+                
+                actionDiv.onclick = (e) => {
+                    if (e.target.type !== 'checkbox') {
+                        selectEmailFromPriority(item.emailId);
+                    }
+                };
+                
+                container.appendChild(actionDiv);
+            });
+        } catch (error) {
+            console.error('Error loading action items:', error);
+        }
+    }
+
+    function displayAIInsights(stats) {
+        if (!stats.aiInsights) return;
+        
+        const insights = stats.aiInsights;
+        
+        // Executive Summary
+        document.getElementById('executiveSummary').innerHTML = insights.executive_summary;
+        
+        // Key Points
+        const keyPointsList = document.getElementById('keyPoints');
+        keyPointsList.innerHTML = insights.key_points.map(point => 
+            `<li>${point}</li>`
+        ).join('');
+        
+        // Risks
+        const risksList = document.getElementById('risksList');
+        risksList.innerHTML = insights.risks.map(risk => 
+            `<li>${risk}</li>`
+        ).join('');
+        
+        // Opportunities
+        const opportunitiesList = document.getElementById('opportunitiesList');
+        opportunitiesList.innerHTML = insights.opportunities.map(opp => 
+            `<li>${opp}</li>`
+        ).join('');
+        
+        // Stakeholders
+        const stakeholdersList = document.getElementById('stakeholdersList');
+        stakeholdersList.innerHTML = insights.stakeholders.map(stakeholder => 
+            `<span class="member-badge" style="font-size: 14px; padding: 6px 12px;">${stakeholder}</span>`
+        ).join('');
+    }
+
+    function toggleAIPanel() {
+        const panel = document.getElementById('aiPanel');
+        const toggleBtn = document.getElementById('aiToggleBtn');
+        const detailPanel = document.getElementById('detailPanel');
+        
+        aiPanelOpen = !aiPanelOpen;
+        
+        if (aiPanelOpen) {
+            panel.classList.add('open');
+            detailPanel.classList.add('ai-open');
+            toggleBtn.classList.add('active');
+        } else {
+            panel.classList.remove('open');
+            detailPanel.classList.remove('ai-open');
+            toggleBtn.classList.remove('active');
+        }
+    }
+
+    function askSuggestion(question) {
+        const input = document.getElementById('aiChatInput');
+        input.value = question;
+        sendAIMessage();
+    }
+
+    async function sendAIMessage() {
+        const input = document.getElementById('aiChatInput');
+        const container = document.getElementById('aiChatContainer');
+        
+        const message = input.value.trim();
+        if (!message) return;
+        
+        // Add user message
+        container.innerHTML += `
+            <div class="message user">
+                <div class="message-avatar">U</div>
+                <div class="message-content">${message}</div>
+            </div>
+        `;
+        
+        input.value = '';
+        
+        // Add loading indicator
+        const loadingId = 'loading-' + Date.now();
+        container.innerHTML += `
+            <div class="message" id="${loadingId}">
+                <div class="message-avatar">AI</div>
+                <div class="message-content">
+                    <i class="fas fa-spinner fa-spin"></i> Analyzing with deep AI insights...
+                </div>
+            </div>
+        `;
+        
+        container.scrollTop = container.scrollHeight;
+        
+        try {
+            const response = await fetch(`${API_BASE_URL}/chat`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ message })
+            });
+            
+            const data = await response.json();
+            
+            // Remove loading indicator
+            document.getElementById(loadingId).remove();
+            
+            // Add AI response
+            container.innerHTML += `
+                <div class="message">
+                    <div class="message-avatar">AI</div>
+                    <div class="message-content">${data.response.replace(/\n/g, '<br>')}</div>
+                </div>
+            `;
+        } catch (error) {
+            document.getElementById(loadingId).remove();
+            container.innerHTML += `
+                <div class="message">
+                    <div class="message-avatar">AI</div>
+                    <div class="message-content">Sorry, I couldn't process that request. Please check your connection.</div>
+                </div>
+            `;
+        }
+        
+        container.scrollTop = container.scrollHeight;
+    }
+
+    function initCharts(stats) {
+        // Sentiment Chart
+        const sentimentCtx = document.getElementById('sentimentChart').getContext('2d');
+        charts.sentiment = new Chart(sentimentCtx, {
+            type: 'doughnut',
+            data: {
+                labels: Object.keys(stats.sentiments || {}),
+                datasets: [{
+                    data: Object.values(stats.sentiments || {}),
+                    backgroundColor: [
+                        '#0b7209', // positive
+                        '#a4262c', // negative
+                        '#ffb900', // mixed
+                        '#004578', // neutral
+                        '#5c2d91', // concerned
+                    ]
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'bottom',
+                        labels: {
+                            padding: 15,
+                            font: { size: 14 }
+                        }
+                    }
+                }
+            }
+        });
+
+        // Urgency Chart
+        const urgencyCtx = document.getElementById('urgencyChart').getContext('2d');
+        charts.urgency = new Chart(urgencyCtx, {
+            type: 'bar',
+            data: {
+                labels: Object.keys(stats.urgency || {}),
+                datasets: [{
+                    label: 'Emails',
+                    data: Object.values(stats.urgency || {}),
+                    backgroundColor: ['#10c510', '#ffb900', '#d13438']
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        ticks: { font: { size: 14 } }
+                    },
+                    x: {
+                        ticks: { font: { size: 14 } }
+                    }
+                },
+                plugins: {
+                    legend: { display: false }
+                }
+            }
+        });
+
+        // Topics Chart
+        const topTopics = Object.entries(stats.topics || {})
+            .sort((a, b) => b[1] - a[1])
+            .slice(0, 10);
+            
+        const topicsCtx = document.getElementById('topicsChart').getContext('2d');
+        charts.topics = new Chart(topicsCtx, {
+            type: 'bar',
+            data: {
+                labels: topTopics.map(t => t[0]),
+                datasets: [{
+                    label: 'Mentions',
+                    data: topTopics.map(t => t[1]),
+                    backgroundColor: '#5c2d91'
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                indexAxis: 'y',
+                scales: {
+                    x: {
+                        beginAtZero: true,
+                        ticks: { font: { size: 12 } }
+                    },
+                    y: {
+                        ticks: { font: { size: 12 } }
+                    }
+                },
+                plugins: {
+                    legend: { display: false }
+                }
+            }
+        });
+
+        // Top Senders Chart
+        const topSenders = Object.entries(stats.senderAnalysis || {})
+            .sort((a, b) => b[1].count - a[1].count)
+            .slice(0, 5);
+            
+        const sendersCtx = document.getElementById('sendersChart').getContext('2d');
+        charts.senders = new Chart(sendersCtx, {
+            type: 'bar',
+            data: {
+                labels: topSenders.map(s => extractNameFromEmail(s[0])),
+                datasets: [{
+                    label: 'Emails',
+                    data: topSenders.map(s => s[1].count),
+                    backgroundColor: '#0078d4'
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        ticks: { font: { size: 14 } }
+                    },
+                    x: {
+                        ticks: { font: { size: 12 } }
+                    }
+                },
+                plugins: {
+                    legend: { display: false }
+                }
+            }
+        });
+    }
+
+    function addTopicOverviewToDashboard() {
+        const dashboardView = document.getElementById('dashboardView');
+        const chartGrid = dashboardView.querySelector('.chart-grid');
+        
+        if (topTopicsList.length === 0) return;
+        
+        // Check if topic section already exists
+        if (dashboardView.querySelector('.topic-filter-section')) {
+            return;
+        }
+        
+        // Create topic overview section
+        const topicSection = document.createElement('div');
+        topicSection.className = 'topic-filter-section';
+        topicSection.innerHTML = `
+            <h3 class="chart-title">Browse by Topic</h3>
+            <div class="topic-grid" id="topicGrid">
+                ${topTopicsList.map(({ topic, count }) => `
+                    <div class="topic-card" onclick="navigateToTopic('${topic}')">
+                        <div class="topic-card-name">${topic}</div>
+                        <div class="topic-card-count">${count}</div>
+                        <div style="font-size: 12px; color: #605e5c;">emails</div>
+                    </div>
+                `).join('')}
+            </div>
+        `;
+        
+        // Insert before the chart grid
+        dashboardView.insertBefore(topicSection, chartGrid);
+    }
+
+    function navigateToTopic(topic) {
+        // Switch to email view
+        const emailNavItem = document.querySelector('.nav-item[onclick*="emails"]');
+        if (emailNavItem) {
+            emailNavItem.click();
+        }
+        
+        // Clear existing filters and apply only this topic
+        setTimeout(() => {
+            clearAllFilters();
+            filterByTopic(topic, null);
+            
+            // Find and activate the topic chip
+            document.querySelectorAll('.filter-chip').forEach(chip => {
+                if (chip.textContent.includes(topic)) {
+                    chip.classList.add('active');
+                }
+            });
+        }, 100);
+    }
+
+// Add these new functions to your existing script
+
+function initializeFilterBar() {
+    // Create the toggle button and active filters summary
+    const filterBar = document.querySelector('.filter-bar');
+    
+    // Add click handler to the entire filter bar
+    filterBar.onclick = function(e) {
+        // Don't toggle if clicking on interactive elements
+        if (e.target.classList.contains('filter-chip') || 
+            e.target.classList.contains('remove-filter') ||
+            e.target.classList.contains('summary-clear-btn') ||
+            e.target.closest('.filter-chip') ||
+            e.target.closest('.active-filter-pill')) {
+            return;
+        }
+        toggleFilterBar();
+    };
+    
+    // Add toggle icon (no longer a button)
+    const toggleIcon = document.createElement('div');
+    toggleIcon.className = 'filter-toggle';
+    toggleIcon.innerHTML = '<i class="fas fa-chevron-up"></i> <span>Filters</span>';
+    
+    // Add active filters summary container
+    const summaryContainer = document.createElement('div');
+    summaryContainer.className = 'active-filters-summary';
+    summaryContainer.id = 'activeFiltersSummary';
+    
+    // Wrap existing filter content
+    const filterContent = document.createElement('div');
+    filterContent.className = 'filter-content';
+    
+    // Move all filter rows into the content wrapper
+    const filterRows = filterBar.querySelectorAll('.filter-row');
+    filterRows.forEach(row => {
+        filterContent.appendChild(row);
+    });
+    
+    // Clear and rebuild filter bar
+    filterBar.innerHTML = '';
+    filterBar.appendChild(toggleIcon);
+    filterBar.appendChild(summaryContainer);
+    filterBar.appendChild(filterContent);
+    
+    // Check if there are active filters on load
+    updateActiveFiltersSummary();
+}
+
+function toggleFilterBar() {
+    const filterBar = document.querySelector('.filter-bar');
+    filterBar.classList.toggle('collapsed');
+    
+    // Update icon text
+    const toggleIcon = filterBar.querySelector('.filter-toggle span');
+    const isCollapsed = filterBar.classList.contains('collapsed');
+    toggleIcon.textContent = isCollapsed ? 'Show Filters' : 'Filters';
+    
+    // Save preference to localStorage
+    localStorage.setItem('filterBarCollapsed', isCollapsed);
+}
+
+function updateActiveFiltersSummary() {
+    const summaryContainer = document.getElementById('activeFiltersSummary');
+    if (!summaryContainer) return;
+    
+    summaryContainer.innerHTML = '';
+    
+    const activeFilterCount = Object.values(activeFilters).reduce((sum, arr) => sum + arr.length, 0);
+    
+    if (activeFilterCount === 0) {
+        summaryContainer.innerHTML = '<span class="filter-summary-text">No active filters</span>';
+        return;
+    }
+    
+    // Add count
+    summaryContainer.innerHTML = `<span class="filter-summary-text">${activeFilterCount} active filter${activeFilterCount !== 1 ? 's' : ''}:</span>`;
+    
+    // Add filter pills
+    Object.entries(activeFilters).forEach(([filterType, filters]) => {
+        filters.forEach(filter => {
+            const pill = document.createElement('span');
+            pill.className = 'active-filter-pill';
+            
+            let displayName = filter;
+            if (filter.startsWith('response:')) {
+                displayName = filter.substring(9);
+            } else if (filter.startsWith('topic-category:')) {
+                displayName = filter.substring(15);
+            } else if (filter.startsWith('topic:')) {
+                displayName = filter.substring(6);
+            }
+            
+            pill.innerHTML = `
+                ${displayName}
+                <span class="remove-filter" onclick="removeFilterFromSummary('${filterType}', '${filter}')">&times;</span>
+            `;
+            summaryContainer.appendChild(pill);
+        });
+    });
+    
+    // Add clear all button
+    const clearBtn = document.createElement('button');
+    clearBtn.className = 'summary-clear-btn';
+    clearBtn.textContent = 'Clear All';
+    clearBtn.onclick = function(e) {
+        e.stopPropagation(); // Prevent filter bar toggle
+        clearAllFilters();
+    };
+    summaryContainer.appendChild(clearBtn);
+}
+
+function removeFilterFromSummary(filterType, filterValue) {
+    event.stopPropagation(); // Prevent filter bar toggle
+    
+    // Find and remove the filter
+    const index = activeFilters[filterType].indexOf(filterValue);
+    if (index > -1) {
+        activeFilters[filterType].splice(index, 1);
+    }
+    
+    // Update UI
+    document.querySelectorAll('.filter-chip').forEach(chip => {
+        chip.classList.remove('active');
+    });
+    
+    // Re-activate remaining filters
+    Object.entries(activeFilters).forEach(([type, filters]) => {
+        filters.forEach(filter => {
+            document.querySelectorAll('.filter-chip').forEach(chip => {
+                if (chip.textContent.includes(filter.replace('response:', '').replace('topic-category:', '').replace('topic:', ''))) {
+                    chip.classList.add('active');
+                }
+            });
+        });
+    });
+    
+    // Deactivate preset buttons since filter has been modified
+    document.querySelectorAll('.preset-btn').forEach(btn => {
+        btn.classList.remove('active');
+    });
+    
+    // Update summary and apply filters
+    updateActiveFiltersSummary();
+    applyFilters();
+}
+
+// Modify your existing toggleFilter function to include summary update and preset deactivation
+const originalToggleFilter = toggleFilter;
+window.toggleFilter = function(filterType, filterValue, element) {
+    originalToggleFilter(filterType, filterValue, element);
+    updateActiveFiltersSummary();
+    
+    // Deactivate preset buttons since filter has been modified
+    document.querySelectorAll('.preset-btn').forEach(btn => {
+        btn.classList.remove('active');
+    });
+};
+
+// Modify your existing clearAllFilters function to include summary update
+const originalClearAllFilters = clearAllFilters;
+window.clearAllFilters = function() {
+    originalClearAllFilters();
+    
+    // Clear preset button states
+    document.querySelectorAll('.preset-btn').forEach(btn => {
+        btn.classList.remove('active');
+    });
+    
+    updateActiveFiltersSummary();
+};
+
+// Update window.onload to initialize the collapsible filter bar
+const originalOnload = window.onload;
+window.onload = async function() {
+    await originalOnload();
+    
+    // Initialize collapsible filter bar
+    setTimeout(() => {
+        initializeFilterBar();
+        initializePresetFilters();
+        
+        // Restore collapsed state from localStorage
+        const isCollapsed = localStorage.getItem('filterBarCollapsed') === 'true';
+        if (isCollapsed) {
+            document.querySelector('.filter-bar').classList.add('collapsed');
+            const toggleIcon = document.querySelector('.filter-toggle span');
+            toggleIcon.textContent = 'Show Filters';
+        }
+    }, 100);
+};
+
+// Add preset filter functionality
+function initializePresetFilters() {
+    const filterBar = document.querySelector('.filter-bar');
+    
+    // Create preset filters container
+    const presetContainer = document.createElement('div');
+    presetContainer.className = 'preset-filters';
+    presetContainer.innerHTML = `
+        <span class="preset-label">Quick Filters:</span>
+        <button class="preset-btn" onclick="applyPresetFilter('urgent-political')">
+            <i class="fas fa-exclamation-triangle"></i>
+            Critical + Political
+        </button>
+        <button class="preset-btn" onclick="applyPresetFilter('urgent-action')">
+            <i class="fas fa-fire"></i>
+            Critical + Political + Direct Response
+        </button>
+        <div class="preset-divider"></div>
+        <button class="preset-btn" onclick="applyPresetFilter('high-priority-members')">
+            <i class="fas fa-user-shield"></i>
+            High Priority + Membership
+        </button>
+        <button class="preset-btn" onclick="applyPresetFilter('complaints-leadership')">
+            <i class="fas fa-comments"></i>
+            Complaints + Leadership
+        </button>
+    `;
+    
+    // Insert after filter bar
+    filterBar.parentNode.insertBefore(presetContainer, filterBar.nextSibling);
+}
+
+function applyPresetFilter(preset) {
+    // Clear all existing filters first
+    clearAllFilters();
+    
+    // Define preset combinations
+    const presets = {
+        'urgent-political': {
+            priority: ['critical'],
+            category: ['topic-category:political']
+        },
+        'urgent-action': {
+            priority: ['critical'],
+            category: ['topic-category:political'],
+            response: ['response:yes-direct']
+        },
+        'high-priority-members': {
+            priority: ['high'],
+            category: ['topic-category:membership']
+        },
+        'complaints-leadership': {
+            sentiment: ['complaint'],
+            category: ['topic-category:leadership']
+        }
+    };
+    
+    const selectedPreset = presets[preset];
+    if (!selectedPreset) return;
+    
+    // Store which preset is currently active
+    window.activePreset = preset;
+    
+    // Apply the preset filters
+    Object.entries(selectedPreset).forEach(([filterType, filterValues]) => {
+        filterValues.forEach(filterValue => {
+            activeFilters[filterType].push(filterValue);
+            
+            // Find and activate corresponding filter chips
+            document.querySelectorAll('.filter-chip').forEach(chip => {
+                const chipText = chip.textContent.toLowerCase();
+                const filterText = filterValue.replace('response:', '').replace('topic-category:', '').toLowerCase();
+                
+                if (chipText.includes(filterText) || 
+                    (filterValue === 'critical' && chipText.includes('critical')) ||
+                    (filterValue === 'high' && chipText.includes('high') && !chipText.includes('critical')) ||
+                    (filterValue === 'response:yes-direct' && chipText.includes('direct response'))) {
+                    chip.classList.add('active');
+                }
+            });
+        });
+    });
+    
+    // Update preset button states
+    document.querySelectorAll('.preset-btn').forEach(btn => {
+        btn.classList.remove('active');
+    });
+    event.target.closest('.preset-btn').classList.add('active');
+    
+    // Apply filters and update summary
+    updateActiveFiltersSummary();
+    applyFilters();
+    
+    // Optionally collapse the filter bar after applying preset
+    const filterBar = document.querySelector('.filter-bar');
+    if (!filterBar.classList.contains('collapsed')) {
+        toggleFilterBar();
+    }
+}</script>
+</body>
+</html>

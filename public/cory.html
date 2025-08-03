@@ -1,0 +1,1149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Email Client - Reply Options</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #f8f9fa;
+            color: #1a1a1a;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .email-client {
+            width: 100%;
+            max-width: 900px;
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 4px 24px rgba(0, 0, 0, 0.06);
+            overflow: hidden;
+            border: 1px solid #e5e7eb;
+        }
+
+        .email-header {
+            padding: 24px;
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        .sender-info {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 16px;
+        }
+
+        .avatar {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            font-size: 18px;
+            color: white;
+        }
+
+        .sender-details h3 {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+
+        .sender-details p {
+            font-size: 14px;
+            color: #6b7280;
+        }
+
+        .subject {
+            font-size: 20px;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        .email-meta {
+            font-size: 14px;
+            color: #6b7280;
+        }
+
+        .email-body {
+            padding: 24px;
+            background: #ffffff;
+        }
+
+        .email-content {
+            line-height: 1.6;
+            color: #374151;
+        }
+
+        .email-content ol {
+            margin: 16px 0;
+            padding-left: 24px;
+        }
+
+        .email-content li {
+            margin: 8px 0;
+        }
+
+        /* Reply Options */
+        .reply-options {
+            padding: 24px;
+            border-top: 1px solid #e5e7eb;
+            display: flex;
+            gap: 12px;
+            justify-content: center;
+        }
+
+        .reply-btn {
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-size: 15px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+            border: none;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .reply-btn.primary {
+            background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+            color: white;
+        }
+
+        .reply-btn.primary:hover {
+            box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
+            transform: translateY(-1px);
+        }
+
+        .reply-btn.secondary {
+            background: white;
+            color: #374151;
+            border: 1px solid #e5e7eb;
+        }
+
+        .reply-btn.secondary:hover {
+            background: #f9fafb;
+            border-color: #6366f1;
+            color: #6366f1;
+        }
+
+        /* Reply Section */
+        .reply-section {
+            display: none;
+            border-top: 1px solid #e5e7eb;
+        }
+
+        .reply-section.active {
+            display: block;
+        }
+
+        .reply-header {
+            padding: 20px 24px;
+            background: #f9fafb;
+            border-bottom: 1px solid #e5e7eb;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .reply-title {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 16px;
+            font-weight: 600;
+        }
+
+        .ai-badge {
+            background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+            color: white;
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+
+        .reply-actions {
+            display: flex;
+            gap: 8px;
+        }
+
+        .action-btn {
+            background: white;
+            border: 1px solid #e5e7eb;
+            color: #374151;
+            padding: 6px 12px;
+            border-radius: 6px;
+            font-size: 13px;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            font-weight: 500;
+        }
+
+        .action-btn:hover {
+            background: #f3f4f6;
+            border-color: #d1d5db;
+        }
+
+        /* Email Editor */
+        .email-editor {
+            padding: 24px;
+            min-height: 300px;
+            outline: none;
+            line-height: 1.8;
+            font-size: 15px;
+        }
+        
+        .email-editor.editable-mode {
+            cursor: text;
+        }
+        
+        .email-editor.editable-mode[contenteditable="true"]:focus {
+            outline: 2px solid #e0e7ff;
+            outline-offset: -2px;
+            border-radius: 8px;
+        }
+
+        /* AI Sentence - Normal state (no highlighting) */
+        .ai-sentence {
+            display: inline;
+            cursor: pointer;
+            transition: all 0.2s;
+            position: relative;
+        }
+
+        .ai-sentence:hover {
+            color: #4f46e5;
+        }
+
+        /* Smart box on hover */
+        .smart-box-wrapper {
+            position: relative;
+            display: inline-block;
+            width: 100%;
+        }
+
+        .smart-box {
+            background: #f5f3ff;
+            border: 1px solid #e0e7ff;
+            border-radius: 8px;
+            padding: 12px;
+            margin: 4px 0;
+            position: relative;
+            box-shadow: 0 2px 8px rgba(99, 102, 241, 0.15);
+            animation: expandIn 0.2s ease;
+        }
+
+        @keyframes expandIn {
+            from {
+                opacity: 0;
+                transform: scale(0.98);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        .smart-box-label {
+            position: absolute;
+            top: -8px;
+            left: 12px;
+            background: #f5f3ff;
+            padding: 0 6px;
+            font-size: 10px;
+            color: #6366f1;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+        }
+
+        .smart-box-content {
+            outline: none;
+            line-height: 1.6;
+            color: #1a1a1a;
+            min-height: 24px;
+        }
+        
+        .smart-box-content:empty:before {
+            content: attr(placeholder);
+            color: #9ca3af;
+            font-style: italic;
+        }
+
+        .smart-box-actions {
+            display: flex;
+            gap: 6px;
+            margin-top: 8px;
+            opacity: 0;
+            transition: opacity 0.2s;
+        }
+
+        .smart-box:hover .smart-box-actions {
+            opacity: 1;
+        }
+
+        .micro-action {
+            font-size: 11px;
+            color: #6b7280;
+            background: white;
+            border: 1px solid #e5e7eb;
+            padding: 3px 8px;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 3px;
+            font-weight: 500;
+        }
+
+        .micro-action:hover {
+            background: #f3f4f6;
+            border-color: #6366f1;
+            color: #4f46e5;
+        }
+
+        /* Send section */
+        .send-section {
+            padding: 20px 24px;
+            border-top: 1px solid #e5e7eb;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .send-btn {
+            background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+            color: white;
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+            border: none;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .send-btn:hover {
+            box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
+            transform: translateY(-1px);
+        }
+
+        .tone-selector {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+        }
+
+        .tone-chip {
+            background: white;
+            border: 1px solid #e5e7eb;
+            color: #6b7280;
+            padding: 6px 14px;
+            border-radius: 16px;
+            font-size: 13px;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-weight: 500;
+        }
+
+        .tone-chip:hover {
+            background: #f3f4f6;
+            border-color: #6366f1;
+            color: #4f46e5;
+        }
+
+        .tone-chip.active {
+            background: #ede9fe;
+            color: #6366f1;
+            border-color: #6366f1;
+        }
+
+        /* Paragraph styles for editing */
+        .paragraph {
+            margin: 16px 0;
+            min-height: 24px; /* Ensure empty paragraphs are clickable */
+            position: relative;
+        }
+
+        .paragraph:focus {
+            outline: none;
+        }
+        
+        .paragraph:empty:before {
+            content: '\200B'; /* Zero-width space to maintain height */
+        }
+
+        /* Add line button */
+        .add-line-container {
+            position: relative;
+            height: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: -8px 0;
+            opacity: 0;
+            transition: opacity 0.2s;
+        }
+
+        /* Show plus button when hovering over the paragraph above it */
+        .paragraph:hover + .add-line-container {
+            opacity: 0.5;
+        }
+
+        /* Show plus button when hovering between paragraphs */
+        .add-line-container:hover {
+            opacity: 1 !important;
+        }
+
+        .add-line-btn {
+            background: #6366f1;
+            color: white;
+            border: none;
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            font-size: 16px;
+            line-height: 1;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .add-line-btn:hover {
+            transform: scale(1.1);
+            box-shadow: 0 4px 8px rgba(99, 102, 241, 0.3);
+        }
+
+        /* Make sure original text isn't editable */
+        .original-text {
+            color: #9ca3af;
+            font-style: italic;
+        }
+
+        .inline-response {
+            color: #1a1a1a;
+            font-weight: normal;
+            cursor: text;
+            display: inline-block;
+            transition: all 0.2s;
+        }
+
+        .inline-response:hover {
+            background-color: rgba(99, 102, 241, 0.05);
+            padding: 2px 4px;
+            margin: -2px -4px;
+            border-radius: 4px;
+        }
+
+        /* Inline edit mode */
+        .inline-reply-mode .email-editor {
+            outline: none;
+        }
+
+        .inline-reply-mode .email-editor[contenteditable="true"] {
+            cursor: text;
+        }
+
+        @keyframes highlight {
+            0% { background-color: rgba(99, 102, 241, 0.3); }
+            100% { background-color: transparent; }
+        }
+
+        .regenerating {
+            animation: highlight 0.5s ease;
+        }
+    </style>
+</head>
+<body>
+    <div class="email-client">
+        <div class="email-header">
+            <div class="sender-info">
+                <div class="avatar">TM</div>
+                <div class="sender-details">
+                    <h3>Tom Mitchell</h3>
+                    <p>tom.mitchell@techcorp.com</p>
+                </div>
+            </div>
+            <h2 class="subject">Action Items from Product Review Meeting</h2>
+            <p class="email-meta">Today at 10:30 AM</p>
+        </div>
+
+        <div class="email-body">
+            <div class="email-content">
+                <p>Hi Sarah,</p>
+                <p>Following up on our product review meeting this morning. Here are the key action items we discussed:</p>
+                <ol>
+                    <li>Update the landing page design with new brand guidelines by Friday</li>
+                    <li>Coordinate with the dev team to fix the mobile navigation bug</li>
+                    <li>Prepare user feedback summary for Q3 and present findings next Tuesday</li>
+                    <li>Review and approve the new onboarding flow mockups from the UX team</li>
+                    <li>Schedule stakeholder interviews for the new feature requirements</li>
+                </ol>
+                <p>Please let me know your progress on these items.</p>
+                <p>Thanks,<br>Tom</p>
+            </div>
+        </div>
+
+        <div class="reply-options">
+            <button class="reply-btn primary" onclick="showReply()">
+                <span>💬</span> Reply
+            </button>
+            <button class="reply-btn secondary" onclick="showInlineReply()">
+                <span>📝</span> Reply Inline
+            </button>
+        </div>
+
+        <div class="reply-section" id="replySection">
+        </div>
+    </div>
+
+    <script>
+        let activeSmartBox = null;
+        let hoverTimeout = null;
+
+        // Alternative sentences for regular replies
+        const alternatives = {
+            1: ["Hi Tom,", "Hello Tom,", "Good afternoon Tom,"],
+            2: ["Thanks for sending over the action items from our meeting.", "Thank you for the comprehensive meeting summary.", "I appreciate you sending the action items."],
+            3: ["I've reviewed each item and here's my status update:", "Here's where we stand on each item:", "I've made progress on several items:"],
+            4: ["For the landing page update, I'll have the designs ready by Thursday EOD.", "The landing page designs are on track for Thursday delivery.", "I'm finalizing the landing page designs - expect them Thursday."],
+            5: ["I've already started implementing the new color palette and typography guidelines.", "The new brand guidelines are being applied to all components.", "Brand guideline implementation is underway."],
+            6: ["Regarding the mobile navigation bug, I met with Alex from the dev team this morning.", "Alex and I discussed the navigation issue earlier today.", "The dev team and I have identified the mobile nav problem."],
+            7: ["We've identified the issue and expect to deploy a fix by tomorrow.", "The fix is ready and will go live tomorrow.", "We'll have this resolved by end of day tomorrow."],
+            8: ["For the Q3 user feedback summary, I'll need access to the analytics dashboard.", "I require analytics dashboard permissions to complete the Q3 summary.", "Once I get dashboard access, I can start on the Q3 feedback analysis."],
+            9: ["Once I have permissions, I can have the summary ready by Monday for your review.", "The summary will be ready Monday after I receive access.", "Expect the completed summary by Monday morning."],
+            10: ["I reviewed the onboarding flow mockups yesterday and left detailed feedback in Figma.", "My feedback on the onboarding mockups is now in Figma.", "I've annotated the onboarding flows with my recommendations."],
+            11: ["Overall they look great, with just a few minor adjustments needed for accessibility.", "The designs are solid - just need some accessibility improvements.", "They're nearly perfect, pending minor accessibility updates."],
+            12: ["I'll send out calendar invites for the stakeholder interviews today.", "Stakeholder interview invitations will go out this afternoon.", "I'm scheduling the stakeholder sessions now."],
+            13: ["Do you have a preferred order, or should I prioritize based on availability?", "Should I prioritize certain stakeholders or go by availability?", "Any preference on interview order, or should I optimize for schedules?"],
+            14: ["Let me know if you need any clarification on these items.", "Please reach out if you need more details on any item.", "Happy to discuss any of these points further."],
+            15: ["Best,<br>Sarah", "Thanks,<br>Sarah", "Regards,<br>Sarah"]
+        };
+
+        // Alternative sentences for inline replies
+        const inlineAlternatives = {
+            intro: ["Thanks for the comprehensive update, Tom.", "Thanks for the clear action items, Tom.", "I appreciate the detailed follow-up, Tom."],
+            r1: ["✓ On track - designs will be ready Thursday EOD", "✓ Already 70% complete - delivering Thursday", "✓ Working on this now - Thursday delivery confirmed"],
+            r2: ["✓ In progress - fix deploying tomorrow", "✓ Bug identified and fixed - deploying soon", "✓ Alex and I resolved this - going live tomorrow"],
+            r3: ["⚠️ Need dashboard access - will deliver Monday once granted", "⚠️ Awaiting permissions - ready to start analysis", "⚠️ Can complete by Monday with dashboard access"],
+            r4: ["✓ Completed - feedback provided in Figma", "✓ Done - left detailed comments yesterday", "✓ Reviewed and approved with minor notes"],
+            r5: ["→ Will send invites today - any priority order?", "→ Scheduling this afternoon - please advise on sequence", "→ Ready to book meetings - need your input on order"],
+            closing: ["All items are progressing well. I'll keep you updated on any changes.", "Everything is on track. Let me know if priorities shift.", "Good progress across all items. Will update you on any blockers."],
+            sig: ["Best,<br>Sarah", "Thanks,<br>Sarah", "Regards,<br>Sarah"]
+        };
+
+        function regenerateInline() {
+            // Regenerate all inline responses
+            document.querySelectorAll('.inline-response').forEach(el => {
+                const id = el.dataset.id;
+                const alts = inlineAlternatives[id];
+                if (alts) {
+                    const currentText = el.textContent;
+                    const newText = alts.find(alt => alt.replace(/<br>/g, '\n') !== currentText) || alts[0];
+                    el.innerHTML = newText;
+                    el.classList.add('regenerating');
+                    setTimeout(() => {
+                        el.classList.remove('regenerating');
+                    }, 500);
+                }
+            });
+        }
+
+        function showReply() {
+            document.getElementById('replySection').innerHTML = `
+                <div class="reply-header">
+                    <div class="reply-title">
+                        <span>Reply</span>
+                        <span class="ai-badge">AI Draft</span>
+                    </div>
+                    <div class="reply-actions">
+                        <button class="action-btn" onclick="regenerateDraft()">
+                            <span>↻</span> New Draft
+                        </button>
+                        <button class="action-btn" onclick="closeDraft()">
+                            <span>✕</span> Cancel
+                        </button>
+                    </div>
+                </div>
+
+                <div class="email-editor editable-mode" id="emailEditor" contenteditable="true">
+                    <div class="paragraph">
+                        <span class="ai-sentence" data-id="1" onclick="convertToSmartBox(this)">Hi Tom,</span>
+                    </div>
+                    
+                    <div class="add-line-container">
+                        <button class="add-line-btn" onclick="addNewLine(this)">+</button>
+                    </div>
+                    
+                    <div class="paragraph">
+                        <span class="ai-sentence" data-id="2" onclick="convertToSmartBox(this)">Thanks for sending over the action items from our meeting.</span> <span class="ai-sentence" data-id="3" onclick="convertToSmartBox(this)">I've reviewed each item and here's my status update:</span>
+                    </div>
+                    
+                    <div class="add-line-container">
+                        <button class="add-line-btn" onclick="addNewLine(this)">+</button>
+                    </div>
+                    
+                    <div class="paragraph">
+                        <span class="ai-sentence" data-id="4" onclick="convertToSmartBox(this)">For the landing page update, I'll have the designs ready by Thursday EOD.</span> <span class="ai-sentence" data-id="5" onclick="convertToSmartBox(this)">I've already started implementing the new color palette and typography guidelines.</span>
+                    </div>
+                    
+                    <div class="add-line-container">
+                        <button class="add-line-btn" onclick="addNewLine(this)">+</button>
+                    </div>
+                    
+                    <div class="paragraph">
+                        <span class="ai-sentence" data-id="6" onclick="convertToSmartBox(this)">Regarding the mobile navigation bug, I met with Alex from the dev team this morning.</span> <span class="ai-sentence" data-id="7" onclick="convertToSmartBox(this)">We've identified the issue and expect to deploy a fix by tomorrow.</span>
+                    </div>
+                    
+                    <div class="add-line-container">
+                        <button class="add-line-btn" onclick="addNewLine(this)">+</button>
+                    </div>
+                    
+                    <div class="paragraph">
+                        <span class="ai-sentence" data-id="8" onclick="convertToSmartBox(this)">For the Q3 user feedback summary, I'll need access to the analytics dashboard.</span> <span class="ai-sentence" data-id="9" onclick="convertToSmartBox(this)">Once I have permissions, I can have the summary ready by Monday for your review.</span>
+                    </div>
+                    
+                    <div class="add-line-container">
+                        <button class="add-line-btn" onclick="addNewLine(this)">+</button>
+                    </div>
+                    
+                    <div class="paragraph">
+                        <span class="ai-sentence" data-id="10" onclick="convertToSmartBox(this)">I reviewed the onboarding flow mockups yesterday and left detailed feedback in Figma.</span> <span class="ai-sentence" data-id="11" onclick="convertToSmartBox(this)">Overall they look great, with just a few minor adjustments needed for accessibility.</span>
+                    </div>
+                    
+                    <div class="add-line-container">
+                        <button class="add-line-btn" onclick="addNewLine(this)">+</button>
+                    </div>
+                    
+                    <div class="paragraph">
+                        <span class="ai-sentence" data-id="12" onclick="convertToSmartBox(this)">I'll send out calendar invites for the stakeholder interviews today.</span> <span class="ai-sentence" data-id="13" onclick="convertToSmartBox(this)">Do you have a preferred order, or should I prioritize based on availability?</span>
+                    </div>
+                    
+                    <div class="add-line-container">
+                        <button class="add-line-btn" onclick="addNewLine(this)">+</button>
+                    </div>
+                    
+                    <div class="paragraph">
+                        <span class="ai-sentence" data-id="14" onclick="convertToSmartBox(this)">Let me know if you need any clarification on these items.</span>
+                    </div>
+                    
+                    <div class="add-line-container">
+                        <button class="add-line-btn" onclick="addNewLine(this)">+</button>
+                    </div>
+                    
+                    <div class="paragraph">
+                        <span class="ai-sentence" data-id="15" onclick="convertToSmartBox(this)">Best,<br>Sarah</span>
+                    </div>
+                </div>
+
+                <div class="send-section">
+                    <div class="tone-selector">
+                        <span class="tone-chip active">Professional</span>
+                        <span class="tone-chip">Friendly</span>
+                        <span class="tone-chip">Concise</span>
+                    </div>
+                    <button class="send-btn">
+                        Send Reply →
+                    </button>
+                </div>
+            `;
+            
+            document.getElementById('replySection').classList.add('active');
+            document.getElementById('replySection').classList.remove('inline-reply-mode');
+            document.querySelector('.reply-options').style.display = 'none';
+            
+            // Make the editor properly editable
+            const editor = document.getElementById('emailEditor');
+            editor.addEventListener('input', handleEditorInput);
+            editor.addEventListener('keydown', handleKeyDown);
+            
+            // Re-attach tone selector handlers
+            document.querySelectorAll('.tone-chip').forEach(chip => {
+                chip.addEventListener('click', function() {
+                    document.querySelectorAll('.tone-chip').forEach(c => c.classList.remove('active'));
+                    this.classList.add('active');
+                });
+            });
+        }
+
+        function showInlineReply() {
+            document.getElementById('replySection').innerHTML = `
+                <div class="reply-header">
+                    <div class="reply-title">
+                        <span>Reply Inline</span>
+                        <span class="ai-badge">AI Assisted</span>
+                    </div>
+                    <div class="reply-actions">
+                        <button class="action-btn" onclick="regenerateInline()">
+                            <span>↻</span> Regenerate
+                        </button>
+                        <button class="action-btn" onclick="closeDraft()">
+                            <span>✕</span> Cancel
+                        </button>
+                    </div>
+                </div>
+
+                <div class="email-editor inline-reply-mode" id="emailEditor" contenteditable="true">
+                    <div class="paragraph" contenteditable="true">
+                        <span class="inline-response ai-sentence" data-id="intro" onclick="convertToSmartBox(this)">Thanks for the comprehensive update, Tom.</span>
+                    </div>
+                    
+                    <div class="add-line-container">
+                        <button class="add-line-btn" onclick="addNewLine(this)">+</button>
+                    </div>
+                    
+                    <div class="paragraph" contenteditable="true">
+                        <span class="original-text">Following up on our product review meeting this morning. Here are the key action items we discussed:</span>
+                    </div>
+                    
+                    <div class="add-line-container">
+                        <button class="add-line-btn" onclick="addNewLine(this)">+</button>
+                    </div>
+                    
+                    <div class="paragraph" contenteditable="true">
+                        <span class="original-text">1. Update the landing page design with new brand guidelines by Friday</span><br>
+                        <span class="inline-response ai-sentence" data-id="r1" onclick="convertToSmartBox(this)">✓ On track - designs will be ready Thursday EOD</span>
+                    </div>
+                    
+                    <div class="add-line-container">
+                        <button class="add-line-btn" onclick="addNewLine(this)">+</button>
+                    </div>
+                    
+                    <div class="paragraph" contenteditable="true">
+                        <span class="original-text">2. Coordinate with the dev team to fix the mobile navigation bug</span><br>
+                        <span class="inline-response ai-sentence" data-id="r2" onclick="convertToSmartBox(this)">✓ In progress - fix deploying tomorrow</span>
+                    </div>
+                    
+                    <div class="add-line-container">
+                        <button class="add-line-btn" onclick="addNewLine(this)">+</button>
+                    </div>
+                    
+                    <div class="paragraph" contenteditable="true">
+                        <span class="original-text">3. Prepare user feedback summary for Q3 and present findings next Tuesday</span><br>
+                        <span class="inline-response ai-sentence" data-id="r3" onclick="convertToSmartBox(this)">⚠️ Need dashboard access - will deliver Monday once granted</span>
+                    </div>
+                    
+                    <div class="add-line-container">
+                        <button class="add-line-btn" onclick="addNewLine(this)">+</button>
+                    </div>
+                    
+                    <div class="paragraph" contenteditable="true">
+                        <span class="original-text">4. Review and approve the new onboarding flow mockups from the UX team</span><br>
+                        <span class="inline-response ai-sentence" data-id="r4" onclick="convertToSmartBox(this)">✓ Completed - feedback provided in Figma</span>
+                    </div>
+                    
+                    <div class="add-line-container">
+                        <button class="add-line-btn" onclick="addNewLine(this)">+</button>
+                    </div>
+                    
+                    <div class="paragraph" contenteditable="true">
+                        <span class="original-text">5. Schedule stakeholder interviews for the new feature requirements</span><br>
+                        <span class="inline-response ai-sentence" data-id="r5" onclick="convertToSmartBox(this)">→ Will send invites today - any priority order?</span>
+                    </div>
+                    
+                    <div class="add-line-container">
+                        <button class="add-line-btn" onclick="addNewLine(this)">+</button>
+                    </div>
+                    
+                    <div class="paragraph" contenteditable="true">
+                        <span class="original-text">Please let me know your progress on these items.</span>
+                    </div>
+                    
+                    <div class="add-line-container">
+                        <button class="add-line-btn" onclick="addNewLine(this)">+</button>
+                    </div>
+                    
+                    <div class="paragraph" contenteditable="true">
+                        <span class="inline-response ai-sentence" data-id="closing" onclick="convertToSmartBox(this)">All items are progressing well. I'll keep you updated on any changes.</span>
+                    </div>
+                    
+                    <div class="add-line-container">
+                        <button class="add-line-btn" onclick="addNewLine(this)">+</button>
+                    </div>
+                    
+                    <div class="paragraph" contenteditable="true">
+                        <span class="inline-response ai-sentence" data-id="sig" onclick="convertToSmartBox(this)">Best,<br>Sarah</span>
+                    </div>
+                </div>
+
+                <div class="send-section">
+                    <div class="tone-selector">
+                        <span class="tone-chip active">Professional</span>
+                        <span class="tone-chip">Brief</span>
+                        <span class="tone-chip">Detailed</span>
+                    </div>
+                    <button class="send-btn">
+                        Send Reply →
+                    </button>
+                </div>
+            `;
+            
+            document.getElementById('replySection').classList.add('active', 'inline-reply-mode');
+            document.querySelector('.reply-options').style.display = 'none';
+            
+            // Add event listeners for inline reply mode
+            const editor = document.getElementById('emailEditor');
+            editor.addEventListener('input', handleEditorInput);
+            editor.addEventListener('keydown', handleKeyDown);
+            
+            // Re-attach tone selector handlers
+            document.querySelectorAll('.tone-chip').forEach(chip => {
+                chip.addEventListener('click', function() {
+                    document.querySelectorAll('.tone-chip').forEach(c => c.classList.remove('active'));
+                    this.classList.add('active');
+                });
+            });
+        }
+
+        function closeDraft() {
+            document.getElementById('replySection').classList.remove('active');
+            document.querySelector('.reply-options').style.display = 'flex';
+        }
+
+        function convertToSmartBox(element) {
+            // Clear any pending timeout
+            if (hoverTimeout) {
+                clearTimeout(hoverTimeout);
+            }
+
+            // Close any existing smart box first
+            if (activeSmartBox && activeSmartBox !== element) {
+                const existingId = activeSmartBox.dataset.sentenceId;
+                convertBackToSentence(activeSmartBox, existingId);
+            }
+
+            // Don't convert if already converted
+            if (element.classList.contains('smart-box-wrapper')) {
+                return;
+            }
+
+            const sentenceId = element.dataset.id;
+            const content = element.innerHTML;
+            
+            // Create smart box
+            const wrapper = document.createElement('span');
+            wrapper.className = 'smart-box-wrapper';
+            wrapper.dataset.sentenceId = sentenceId;
+            
+            const smartBox = document.createElement('div');
+            smartBox.className = 'smart-box';
+            smartBox.innerHTML = `
+                <span class="smart-box-label">AI Sentence</span>
+                <div class="smart-box-content" contenteditable="true">${content}</div>
+                <div class="smart-box-actions">
+                    <button class="micro-action" onclick="regenerateSentence(this, '${sentenceId}')">↻ Regen</button>
+                    <button class="micro-action" onclick="expandSentence(this)">+ Expand</button>
+                    <button class="micro-action" onclick="shortenSentence(this)">− Short</button>
+                    <button class="micro-action" onclick="deleteSentence(this)">✕ Delete</button>
+                </div>
+            `;
+            
+            wrapper.appendChild(smartBox);
+            element.parentNode.replaceChild(wrapper, element);
+            
+            activeSmartBox = wrapper;
+            
+            // Set up mouseleave handler
+            wrapper.addEventListener('mouseleave', function(e) {
+                // Check if we're really leaving the wrapper
+                const rect = wrapper.getBoundingClientRect();
+                const isReallyLeaving = (
+                    e.clientX < rect.left ||
+                    e.clientX > rect.right ||
+                    e.clientY < rect.top ||
+                    e.clientY > rect.bottom
+                );
+                
+                if (isReallyLeaving) {
+                    hoverTimeout = setTimeout(() => {
+                        if (activeSmartBox === wrapper) {
+                            convertBackToSentence(wrapper, sentenceId);
+                        }
+                    }, 300);
+                }
+            });
+            
+            wrapper.addEventListener('mouseenter', function() {
+                if (hoverTimeout) {
+                    clearTimeout(hoverTimeout);
+                }
+            });
+        }
+
+        function convertBackToSentence(wrapper, sentenceId) {
+            const content = wrapper.querySelector('.smart-box-content').innerHTML;
+            
+            const sentence = document.createElement('span');
+            sentence.className = 'ai-sentence';
+            sentence.innerHTML = content;
+            sentence.dataset.id = sentenceId;
+            sentence.onclick = function() { convertToSmartBox(this); };
+            
+            wrapper.parentNode.replaceChild(sentence, wrapper);
+            activeSmartBox = null;
+        }
+
+        function regenerateSentence(button, sentenceId) {
+            const content = button.closest('.smart-box').querySelector('.smart-box-content');
+            const alts = alternatives[sentenceId] || inlineAlternatives[sentenceId];
+            
+            if (alts) {
+                const currentText = content.innerHTML;
+                const newText = alts.find(alt => alt !== currentText) || alts[0];
+                content.innerHTML = newText;
+                content.style.animation = 'highlight 0.5s ease';
+                setTimeout(() => {
+                    content.style.animation = '';
+                }, 500);
+            } else {
+                // For user-generated content, provide generic alternatives
+                const genericAlts = [
+                    "Thank you for bringing this to my attention.",
+                    "I appreciate your feedback on this matter.",
+                    "I'll look into this and get back to you soon.",
+                    "This is an important point to consider.",
+                    "I understand your concern and will address it."
+                ];
+                content.innerHTML = genericAlts[Math.floor(Math.random() * genericAlts.length)];
+                content.style.animation = 'highlight 0.5s ease';
+                setTimeout(() => {
+                    content.style.animation = '';
+                }, 500);
+            }
+        }
+
+        function expandSentence(button) {
+            const content = button.closest('.smart-box').querySelector('.smart-box-content');
+            content.innerHTML += ' I\'ll keep you updated on progress.';
+        }
+
+        function shortenSentence(button) {
+            const content = button.closest('.smart-box').querySelector('.smart-box-content');
+            const words = content.textContent.split(' ');
+            content.innerHTML = words.slice(0, Math.ceil(words.length / 2)).join(' ') + '.';
+        }
+
+        function deleteSentence(button) {
+            const wrapper = button.closest('.smart-box-wrapper');
+            wrapper.remove();
+            activeSmartBox = null;
+        }
+
+        function regenerateDraft() {
+            // This would regenerate the entire draft
+            const sentences = document.querySelectorAll('.ai-sentence');
+            sentences.forEach(sentence => {
+                sentence.style.animation = 'highlight 0.5s ease';
+                setTimeout(() => {
+                    sentence.style.animation = '';
+                }, 500);
+            });
+        }
+
+        // Remove the global mouse move handler since we're using mouseleave instead
+        // This was causing conflicts
+
+        // Handle tone selection
+        document.querySelectorAll('.tone-chip').forEach(chip => {
+            chip.addEventListener('click', function() {
+                document.querySelectorAll('.tone-chip').forEach(c => c.classList.remove('active'));
+                this.classList.add('active');
+            });
+        });
+
+        // Add new line function
+        function addNewLine(button) {
+            const container = button.closest('.add-line-container');
+            
+            // Create new paragraph
+            const newParagraph = document.createElement('div');
+            newParagraph.className = 'paragraph';
+            newParagraph.contentEditable = 'true';
+            newParagraph.innerHTML = ''; // Empty paragraph
+            
+            // Create new add line button
+            const newAddLineContainer = document.createElement('div');
+            newAddLineContainer.className = 'add-line-container';
+            newAddLineContainer.innerHTML = '<button class="add-line-btn" onclick="addNewLine(this)">+</button>';
+            
+            // Insert the new paragraph and button after the current button
+            container.parentNode.insertBefore(newParagraph, container.nextSibling);
+            container.parentNode.insertBefore(newAddLineContainer, newParagraph.nextSibling);
+            
+            // Focus on the new paragraph
+            newParagraph.focus();
+        }
+        
+        // Handle editor input to make sentences clickable
+        function handleEditorInput(e) {
+            // Clear any existing timeout
+            if (window.processTimeout) {
+                clearTimeout(window.processTimeout);
+            }
+            
+            // Only process after user stops typing for 1 second
+            window.processTimeout = setTimeout(() => {
+                processSentences();
+            }, 1000);
+        }
+        
+        // Handle key events
+        function handleKeyDown(e) {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                // Insert a new paragraph
+                document.execCommand('insertHTML', false, '</div><div class="add-line-container"><button class="add-line-btn" onclick="addNewLine(this)">+</button></div><div class="paragraph">');
+            }
+        }
+        
+        // Process text to make sentences clickable
+        function processSentences() {
+            const editor = document.getElementById('emailEditor');
+            const paragraphs = editor.querySelectorAll('.paragraph');
+            
+            // Save cursor position
+            const selection = window.getSelection();
+            const range = selection.rangeCount > 0 ? selection.getRangeAt(0) : null;
+            const startOffset = range ? range.startOffset : 0;
+            const startContainer = range ? range.startContainer : null;
+            
+            paragraphs.forEach(para => {
+                // Skip if paragraph contains smart box or is currently being edited
+                if (para.querySelector('.smart-box-wrapper')) return;
+                if (para === document.activeElement) return;
+                
+                // Check if this paragraph contains the cursor
+                if (startContainer && para.contains(startContainer)) return;
+                
+                // Process only plain text nodes
+                const text = para.textContent.trim();
+                if (!text || text.length < 5) return;
+                
+                // Skip if already has AI sentences
+                if (para.querySelector('.ai-sentence')) return;
+                
+                // Split into sentences (simple split by . ! ?)
+                const sentences = text.match(/[^.!?]+[.!?]+/g) || [text];
+                
+                // Only process if there are actual sentences
+                if (sentences.length > 0) {
+                    para.innerHTML = sentences.map((sentence, index) => {
+                        const id = 'user-' + Date.now() + '-' + index;
+                        return `<span class="ai-sentence" data-id="${id}" onclick="convertToSmartBox(this)">${sentence.trim()}</span>`;
+                    }).join(' ');
+                }
+            });
+        }
+        
+        // Modified convertToSmartBox to work with dynamic content
+        function convertToSmartBox(element) {
+            // Clear any pending timeout
+            if (hoverTimeout) {
+                clearTimeout(hoverTimeout);
+            }
+
+            // Close any existing smart box first
+            if (activeSmartBox && activeSmartBox !== element) {
+                const existingWrapper = activeSmartBox;
+                const existingId = existingWrapper.dataset.sentenceId;
+                const existingContent = existingWrapper.querySelector('.smart-box-content').innerHTML;
+                
+                const existingSentence = document.createElement('span');
+                existingSentence.className = 'ai-sentence';
+                existingSentence.innerHTML = existingContent;
+                existingSentence.dataset.id = existingId;
+                existingSentence.onclick = function() { convertToSmartBox(this); };
+                
+                existingWrapper.parentNode.replaceChild(existingSentence, existingWrapper);
+            }
+
+            // Don't convert if already converted
+            if (element.classList.contains('smart-box-wrapper')) {
+                return;
+            }
+
+            const sentenceId = element.dataset.id;
+            const content = element.innerHTML;
+            
+            // Create smart box
+            const wrapper = document.createElement('span');
+            wrapper.className = 'smart-box-wrapper';
+            wrapper.dataset.sentenceId = sentenceId;
+            
+            const smartBox = document.createElement('div');
+            smartBox.className = 'smart-box';
+            smartBox.innerHTML = `
+                <span class="smart-box-label">AI Sentence</span>
+                <div class="smart-box-content" contenteditable="true">${content}</div>
+                <div class="smart-box-actions">
+                    <button class="micro-action" onclick="regenerateSentence(this, '${sentenceId}')">↻ Regen</button>
+                    <button class="micro-action" onclick="expandSentence(this)">+ Expand</button>
+                    <button class="micro-action" onclick="shortenSentence(this)">− Short</button>
+                    <button class="micro-action" onclick="deleteSentence(this)">✕ Delete</button>
+                </div>
+            `;
+            
+            wrapper.appendChild(smartBox);
+            element.parentNode.replaceChild(wrapper, element);
+            
+            activeSmartBox = wrapper;
+            
+            // Focus on content
+            const contentDiv = smartBox.querySelector('.smart-box-content');
+            contentDiv.focus();
+            
+            // Set up mouseleave handler for the wrapper
+            wrapper.addEventListener('mouseleave', function(e) {
+                // Check if we're really leaving the wrapper
+                const rect = wrapper.getBoundingClientRect();
+                const isReallyLeaving = (
+                    e.clientX < rect.left ||
+                    e.clientX > rect.right ||
+                    e.clientY < rect.top ||
+                    e.clientY > rect.bottom
+                );
+                
+                if (isReallyLeaving) {
+                    hoverTimeout = setTimeout(() => {
+                        if (activeSmartBox === wrapper && !wrapper.contains(document.activeElement)) {
+                            convertBackToSentence(wrapper, sentenceId);
+                        }
+                    }, 300);
+                }
+            });
+            
+            wrapper.addEventListener('mouseenter', function() {
+                if (hoverTimeout) {
+                    clearTimeout(hoverTimeout);
+                }
+            });
+        }
+    </script>
+</body>
+</html>
